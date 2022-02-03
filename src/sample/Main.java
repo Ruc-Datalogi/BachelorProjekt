@@ -4,10 +4,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -17,6 +20,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
+        Canvas mainCanvas = new Canvas(600,600);
+
+        GraphicsContext gc = mainCanvas.getGraphicsContext2D();
+
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0,0,600,600);
 
         Label title = new Label("Knapsacking boys");
         ToolBar toolBar = new ToolBar();
@@ -29,12 +38,12 @@ public class Main extends Application {
         topBorderPane.setCenter(toolBar);
 
         mainBorderPane.setTop(topBorderPane);
+        mainBorderPane.setCenter(mainCanvas);
         primaryStage.setTitle("Drengene");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(mainBorderPane, 1000, 800));
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);
