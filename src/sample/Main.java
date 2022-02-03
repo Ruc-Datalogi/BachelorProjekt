@@ -4,15 +4,34 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        BorderPane mainBorderPane = new BorderPane();
+        BorderPane topBorderPane = new BorderPane();
+
+        Label title = new Label("Knapsacking boys");
+        ToolBar toolBar = new ToolBar();
+        toolBar.getItems().add(new Button("Button 1"));
+        toolBar.getItems().add(new Button("Button 2"));
+        toolBar.getItems().add(new Button("Button 3"));
+        toolBar.getItems().add(new Button("Button 4"));
+
+        topBorderPane.setTop(title);
+        topBorderPane.setCenter(toolBar);
+
+        mainBorderPane.setTop(topBorderPane);
         primaryStage.setTitle("Drengene");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setResizable(false);
+        primaryStage.setScene(new Scene(mainBorderPane, 1000, 800));
         primaryStage.show();
     }
 
