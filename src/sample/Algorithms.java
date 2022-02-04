@@ -6,7 +6,14 @@ import java.util.Arrays;
 
 public class Algorithms {
 
-    public ArrayList<Bin1D> firstFit(ArrayList<String> arr, int binCapacity) {
+
+    /**
+     *
+     * @param arr Array of strings separated by whitespace
+     * @param binCapacity int capacity of a single bin
+     * @return
+     */
+    public static ArrayList<Bin1D> firstFit(ArrayList<String> arr, int binCapacity) {
             ArrayList<Bin1D> bins = new ArrayList<>();
             bins.add(new Bin1D(binCapacity));
             Integer pointer = 0;
@@ -24,10 +31,11 @@ public class Algorithms {
             for(Bin1D bin : bins){
                 System.out.println(bin.toString());
             }
+
             return bins;
     }
 
-    public boolean overCapacity (Integer boxSize, Bin1D b1d) {
+    private static boolean overCapacity (Integer boxSize, Bin1D b1d) {
         Integer sum = 0;
         for (Integer b : b1d.box) {
             sum += b;
