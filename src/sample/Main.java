@@ -2,6 +2,7 @@ package sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -23,6 +24,10 @@ public class Main extends Application {
         Canvas mainCanvas = new Canvas(600,600);
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
+        DataImporter dataImporter = new DataImporter();
+        dataImporter.loadFile("C:\\Users\\marti\\Downloads\\bin1data (2)\\N1C1W1_A.BPP");
+        Algorithms algorithms = new Algorithms();
+        algorithms.firstFit(dataImporter.bins1D, 100);
 
         gc.setFill(Color.WHITE);
         gc.fillRect(0,0,600,600);
@@ -36,6 +41,7 @@ public class Main extends Application {
 
         topBorderPane.setTop(title);
         topBorderPane.setCenter(toolBar);
+
 
         mainBorderPane.setTop(topBorderPane);
         mainBorderPane.setCenter(mainCanvas);
