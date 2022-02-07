@@ -25,7 +25,7 @@ public class Main extends Application {
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
         DataImporter dataImporter = new DataImporter();
-        dataImporter.loadFile("C:\\Users\\marti\\Downloads\\bin1data (2)\\N1C1W1_A.BPP");
+        dataImporter.loadFile("../Data/N1C1W1_A.BPP");
 
         Algorithms.firstFit(dataImporter.bins1D, 100);
         gc.setFill(Color.WHITE);
