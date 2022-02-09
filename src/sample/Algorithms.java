@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 public class Algorithms {
 
-
     /**
      *
      * @param arr Array of strings separated by whitespace
      * @param binCapacity int capacity of a single bin
      * @return
      */
+
     public static ArrayList<Bin1D> firstFit(ArrayList<String> arr, int binCapacity) {
             ArrayList<Bin1D> bins = new ArrayList<>();
             bins.add(new Bin1D(binCapacity));
