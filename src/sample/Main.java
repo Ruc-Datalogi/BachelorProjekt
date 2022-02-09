@@ -24,7 +24,11 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    final static double FONT_SIZE = 46.0;
+    final double FONT_SIZE = 46.0;
+    final double BUTTON_HEIGHT = 40.0;
+    final double BUTTON_WIDTH = 100.0;
+    final State state = new State();
+    static final String[] dimensionList = new String[]{"One Dimension","Two Dimension","Three Dimension"};
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -36,21 +40,43 @@ public class Main extends Application {
         DataImporter dataImporter = new DataImporter();
         dataImporter.loadFile("./src/Data/N1C1W1_A.BPP");
 
-        Algorithms.firstFit(dataImporter.bins1D, 100);
+        Calculator.firstFit(dataImporter.bins1D, 100);
         gc.setFill(Color.WHITE);
         gc.fillRect(0,0,600,600);
 
         Label title = new Label("Bin Packing Problem");
         Button calculate = new Button("Calculate");
-        calculate.setPrefSize(100,40);
-        Button tester = new Button("Tester");
-        tester.setPrefSize(100,40);
+        calculate.setOnAction((e) -> {
+            if(state.selectedDimension == Dimension.ONEDIMENSION) {
+                Calculator.calculateOneDimension(state.selectedAlgorithmOneDimension, dataImporter.bins1D, 100);
+            }
+        });
+        calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
 
         title.setFont(new Font(FONT_SIZE));
         HBox hBox = new HBox();
+        ComboBox<Dimension> comboBoxDimensions = new ComboBox();
+        comboBoxDimensions.setItems(FXCollections.observableArrayList(Dimension.values()));
+        ComboBox<AlgorithmsOneDimension> comboBoxAlgorithms = new ComboBox();
+        comboBoxAlgorithms.setItems(FXCollections.observableArrayList(AlgorithmsOneDimension.values()));
+
+        comboBoxAlgorithms.setOnAction((e) -> {
+            changeAlgorithmState(comboBoxAlgorithms);
+        });
+
+
+        comboBoxDimensions.getSelectionModel().selectFirst();
+        comboBoxDimensions.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
+        comboBoxDimensions.setOnAction((e) -> {
+            changeDimensionState(comboBoxDimensions.getSelectionModel().getSelectedItem(), comboBoxAlgorithms);
+        });
+
+        comboBoxAlgorithms.getSelectionModel().selectFirst();
+        comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
+
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(calculate, tester);
+        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, calculate);
 
 
         BorderPane.setAlignment(title, Pos.CENTER);
@@ -67,17 +93,30 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private ComboBox algorithms () {
-        ObservableList<String> options =
-                FXCollections.observableArrayList(
-                        "1 Dimension",
-                        "2 Dimension",
-                        "3 Dimension"
-                );
-
-        ComboBox comboBox = new ComboBox(options);
-        return comboBox;
+    private void changeDimensionState (Dimension d, ComboBox c) {
+        switch (d) {
+            case ONEDIMENSION:
+                c.setItems(FXCollections.observableArrayList(AlgorithmsOneDimension.values()));
+                c.getSelectionModel().selectFirst();
+                state.selectedDimension = Dimension.ONEDIMENSION;
+                break;
+            case TWODIMENSION:
+                c.setItems(FXCollections.observableArrayList(AlgorithmsTwoDimension.values()));
+                c.getSelectionModel().selectFirst();
+                state.selectedDimension = Dimension.TWODIMENSION;
+                break;
+            case THREEDIMENSION:
+                state.selectedDimension = Dimension.THREEDIMENSION;
+                break;
+        }
     }
+
+    private void changeAlgorithmState(ComboBox c) {
+        if (state.selectedDimension == Dimension.ONEDIMENSION) {
+
+        }
+    }
+
 
     public static void main(String[] args) {
         launch(args);
