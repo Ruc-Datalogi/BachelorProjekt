@@ -1,8 +1,6 @@
 package sample;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Calculator {
 
@@ -43,7 +41,7 @@ public class Calculator {
         return sum + boxSize < b1d.maxCapacity;
     }
 
-    public static void calculateOneDimension(AlgorithmsOneDimension a, ArrayList<String> arr, int binCapacity) {
+    public static void calculateOneDimension(Algorithms a, ArrayList<String> arr, int binCapacity) {
         switch (a) {
             case FIRST_FIT:
                 firstFit(arr, binCapacity);
@@ -53,6 +51,5 @@ public class Calculator {
                 break;
         }
     }
-
 
 }
