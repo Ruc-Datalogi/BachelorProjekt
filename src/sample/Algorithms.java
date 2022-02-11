@@ -21,12 +21,11 @@ public enum Algorithms {
 
     public static ArrayList<Algorithms> getAlgorithms (Dimension d){
         ArrayList<Algorithms> output = new ArrayList<>();
-        Arrays.asList(Algorithms.values()).forEach(a -> {
-            if(a.dimension == d){
-                output.add(a);
+        Arrays.asList(Algorithms.values()).forEach(algo -> {
+            if(algo.dimension == d){
+                output.add(algo);
             }
         });
-        System.out.println(output.toString());
         return output;
     }
 }

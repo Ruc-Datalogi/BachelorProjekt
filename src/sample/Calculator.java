@@ -18,11 +18,14 @@ public class Calculator {
 
             for(String box : arr) {
                 if(overCapacity(Integer.valueOf(box), bins.get(pointer))) {
+                    bins.get(pointer).incrementCapacity(Integer.valueOf(box));
                     bins.get(pointer).box.add(Integer.valueOf(box));
                 } else {
-                    bins.add(new Bin1D(binCapacity));
+                    Bin1D bin1DTemp = new Bin1D(binCapacity);
+                    bin1DTemp.box.add(Integer.valueOf(box));
+                    bin1DTemp.incrementCapacity(Integer.valueOf(box));
+                    bins.add(bin1DTemp);
                     pointer++;
-                    bins.get(pointer).box.add(Integer.valueOf(box));
                 }
             }
 
@@ -41,15 +44,17 @@ public class Calculator {
         return sum + boxSize < b1d.maxCapacity;
     }
 
-    public static void calculateOneDimension(Algorithms a, ArrayList<String> arr, int binCapacity) {
+    public static ArrayList<Bin1D> calculateOneDimension(Algorithms a, ArrayList<String> arr, int binCapacity) {
+        ArrayList<Bin1D> output = new ArrayList<>();
         switch (a) {
             case FIRST_FIT:
-                firstFit(arr, binCapacity);
+                output = firstFit(arr, binCapacity);
                 break;
             case WORST_FIT:
                 System.out.println("i am worst");
                 break;
         }
+        return output;
     }
 
 }

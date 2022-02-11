@@ -16,23 +16,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class Main extends Application {
 
     final double FONT_SIZE = 46.0;
     final double BUTTON_HEIGHT = 40.0;
     final double BUTTON_WIDTH = 100.0;
     final State state = new State();
-    static final String[] dimensionList = new String[]{"One Dimension","Two Dimension","Three Dimension"};
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
         Canvas mainCanvas = new Canvas(600,600);
-        GraphicsContext gc = mainCanvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0,0,600,600);
-
+        Painter painter = new Painter(mainCanvas);
+        painter.fillBlank();
         DataImporter dataImporter = new DataImporter();
         dataImporter.loadFile("./src/Data/N1C1W1_A.BPP");
         Calculator.firstFit(dataImporter.bins1D, 100);
@@ -44,14 +43,17 @@ public class Main extends Application {
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
             if(state.selectedDimension == Dimension.ONEDIMENSION){
-                Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
+                ArrayList<Bin1D> hello = Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
+                for(int i = 0 ; i < hello.size() ; i++ ) {
+                    painter.drawBox1D(40*i +16, 100, hello.get(i));
+                }
             }
         });
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
-        comboBoxAlgorithms.getSelectionModel().selectFirst();
         comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
         comboBoxAlgorithms.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(Dimension.ONEDIMENSION)));
+        comboBoxAlgorithms.getSelectionModel().selectFirst();
         comboBoxAlgorithms.setOnAction((e) -> {
             changeAlgorithmState(comboBoxAlgorithms.getSelectionModel().getSelectedItem());
         });
