@@ -45,7 +45,8 @@ public class Main extends Application {
             if(state.selectedDimension == Dimension.ONEDIMENSION){
                 ArrayList<Bin1D> hello = Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
                 for(int i = 0 ; i < hello.size() ; i++ ) {
-                    painter.drawBox1D(40*i +16, 100, hello.get(i));
+
+                    painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), hello.get(i));
                 }
             }
         });
