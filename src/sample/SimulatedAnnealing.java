@@ -3,31 +3,39 @@ package sample;
 import java.util.ArrayList;
 
 public class SimulatedAnnealing {
+    ArrayList<?> finalSolution;
 
-    //e represents energy and is what we either want to minimize or maximize.
-    private float e;
-    private float deltaE;
-    private float coolingRate; //how much does tCur change per step?
 
-    void simulatedAnnealing(Algorithm a1, int tMax, int tMin, ArrayList<Object> initialConfiguration, float initialEnergy) {
-        int tCur = tMax; //tCur is the current temperature at a given step.
-        ArrayList<Object> c = initialConfiguration;
-        e = initialEnergy;
+    <T>void simulatedAnnealing(Algorithm a1, float tMax, float tMin, ArrayList<T> initialConfiguration, float initialOptimizationFactor, float coolingRate) {
+        float tCur = tMax; //tCur is the current temperature at a given step
+        a1.optimizationFactor = initialOptimizationFactor;
+        a1.solution = initialConfiguration;
+        float delta;
 
         while (tCur > tMin){
-            e = a1.optimizationFactor; //is executed before we calculate the new energy
-
             a1.execute();
-            ArrayList<Object> nextConfiguration = a1.solution;
-            float newE = a1.optimizationFactor;
+            float newOptimizationFactor = a1.optimizationFactor;
+            ArrayList<Object> newSolution = new ArrayList<>(a1.solution);
 
-            deltaE = e - newE;
+            delta = a1.optimizationFactor - newOptimizationFactor;
 
-            if(deltaE > 0){
+            if(delta < 0){ //direction of < changes whether you want to minimize or maximize
 
+                //System.out.println("Entered if statement 2");
+                a1.solution = newSolution;                       //Choose the next solution as the current solution.
+                a1.optimizationFactor = newOptimizationFactor;
 
+            } else if ( Math.exp(delta/tCur) > Math.random())  {
+                //System.out.println("Entered if statement 1");
+                a1.solution = newSolution;                        //Choose the next solution as the current solution.
+                a1.optimizationFactor = newOptimizationFactor;
             }
 
+            tCur *= coolingRate;
+            //System.out.printf(String.valueOf(a1.solution));
+            //System.out.println("Temp after step: " + tCur);
         }
+        System.out.println("New solution size " + a1.solution.size());
+        finalSolution = a1.solution;
     }
 }

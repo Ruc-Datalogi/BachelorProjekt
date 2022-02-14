@@ -6,17 +6,16 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main extends Application {
 
@@ -44,9 +43,24 @@ public class Main extends Application {
         calculate.setOnAction((e) -> {
             if(state.selectedDimension == Dimension.ONEDIMENSION){
                 ArrayList<Bin1D> hello = Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
+
+                AtomicInteger sum = new AtomicInteger();
+                hello.forEach((b) -> sum.addAndGet(b.capacity));
+                System.out.println(sum);
+                System.out.println(hello.size());
                 for(int i = 0 ; i < hello.size() ; i++ ) {
 
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), hello.get(i));
+                }
+
+
+
+                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),20000000,0.00001f,hello,hello.size(),0.9f);
+
+                for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
+
+                    painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
                 }
             }
         });

@@ -6,7 +6,7 @@ public abstract class Algorithm {
 
 
     public float optimizationFactor;
-    public ArrayList<Object> solution;
+    public ArrayList<?> solution;
     abstract void execute();
 
 }
