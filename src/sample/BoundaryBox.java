@@ -41,8 +41,24 @@ public class BoundaryBox {
         }
         return Math.max(cornerA.getY(),cornerB.getY());
     }
+    boolean containsPoint(Point2D p){
+        //TODO test if logic for contains point works.
+        return p.getX() >= this.getMinX() && p.getX() <= this.getMaxX() && p.getY() >= this.getMinY() && p.getY() <= this.getMaxY();
+    }
     boolean hasOverlap(BoundaryBox other){
-        //TODO add logic for boundary box overlap
+        //TODO test if logic for overlap is accurate
+        /*
+
+        if(ax1 > bx2 || bx1 > ax2 || ay1 > by2 || by1 > ay2)
+
+         */
+        if (this.getMinX() > other.getMaxX() ||
+                other.getMinX()> this.getMaxX() ||
+                this.getMinY()> other.getMaxY() ||
+                other.getMinY()>this.getMaxY()){
+            return true;
+        }
+
         return false;
 
     }

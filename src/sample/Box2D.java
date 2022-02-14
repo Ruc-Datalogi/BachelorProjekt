@@ -1,10 +1,11 @@
 package sample;
 
 //A 2 dimensional box with a width and a height
-public class Box2D {
+public class Box2D extends BoundaryBox{
     int w,l;
     Point2D coords[] = new Point2D[4];
     public Box2D(int width, int length) {
+        super(new Point2D(0,0),new Point2D(width,length));
         w=width;
         l=length;
 
