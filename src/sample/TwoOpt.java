@@ -10,6 +10,7 @@ public class TwoOpt extends Algorithm {
 
     TwoOpt(ArrayList<Bin1D> configuration){
         this.configuration = configuration;
+        System.out.println("2opt init");
     }
 
 
