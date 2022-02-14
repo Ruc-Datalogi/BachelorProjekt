@@ -19,7 +19,7 @@ public class Bin2D {
         if(box.l>this.l || box.w>this.l){
             //Box cannot be inside bin ever
             return false;
-        }else if()
+        }
         return false;
     }
     void addBox(Box2D box){
