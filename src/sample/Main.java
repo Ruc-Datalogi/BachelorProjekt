@@ -42,10 +42,10 @@ public class Main extends Application {
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
+            painter.fillBlank();
             if(state.selectedDimension == Dimension.ONEDIMENSION){
                 ArrayList<Bin1D> hello = Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
                 for(int i = 0 ; i < hello.size() ; i++ ) {
-
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), hello.get(i));
                 }
             }
