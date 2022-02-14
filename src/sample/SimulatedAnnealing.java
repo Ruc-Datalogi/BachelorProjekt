@@ -6,13 +6,16 @@ public class SimulatedAnnealing {
     ArrayList<?> finalSolution;
 
 
-    <T>void simulatedAnnealing(Algorithm a1, float tMax, float tMin, ArrayList<T> initialConfiguration, float initialOptimizationFactor, float coolingRate) {
+    <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, ArrayList<T> initialConfiguration, float initialOptimizationFactor, float coolingRate) {
         float tCur = tMax; //tCur is the current temperature at a given step
         a1.optimizationFactor = initialOptimizationFactor;
         a1.solution = initialConfiguration;
         float delta;
 
+        int i = 0;
+
         while (tCur > tMin){
+            i++;
             a1.execute();
             float newOptimizationFactor = a1.optimizationFactor;
             ArrayList<Object> newSolution = new ArrayList<>(a1.solution);
@@ -36,6 +39,7 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
         }
         System.out.println("New solution size " + a1.solution.size());
+        System.out.println("Iterations " + i);
         finalSolution = a1.solution;
     }
 }
