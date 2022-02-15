@@ -2,10 +2,12 @@ package sample;
 
 import java.util.ArrayList;
 
+import java.lang.ProcessBuilder;
 public class Bin1D {
     ArrayList<Integer> box = new ArrayList<>();
     int maxCapacity;
     int capacity = 0;
+
     public Bin1D(int maxC) {
         this.maxCapacity = maxC;
     }
