@@ -6,6 +6,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TwoOpt extends Algorithm {
 
+    public ArrayList<?> solution(){
+        return configuration;
+    }
+
     ArrayList<Bin1D> configuration;
 
     TwoOpt(ArrayList<Bin1D> configuration){
@@ -23,6 +27,8 @@ public class TwoOpt extends Algorithm {
         Bin1D bin1 = configuration.get(index1);
         Bin1D bin2 = configuration.get(index2);
 
+        if (bin1 == bin2) return;
+
         int boxIndex1 = r1.nextInt(bin1.box.size());
         int boxIndex2 = r1.nextInt(bin2.box.size());
 
@@ -32,7 +38,7 @@ public class TwoOpt extends Algorithm {
         int newCapBin1 = bin1.capacity - box1 + box2;
         int newCapBin2 = bin2.capacity - box2 + box1;
 
-        if (bin1.capacity + box2 < bin1.maxCapacity && bin2.box.size() == 1) { //try to add box from 2 to 1,
+        if (bin1.capacity + box2 < bin1.maxCapacity && bin2.box.size() == 1) { //try to add box from 2 to 1
             bin1.box.add(box2);
             bin2.box.remove(boxIndex2);
             bin1.capacity += box2;
@@ -56,9 +62,10 @@ public class TwoOpt extends Algorithm {
 
         this.optimizationFactor = configuration.size();
 
-        AtomicInteger sum = new AtomicInteger();
-        configuration.forEach(bin1D -> sum.addAndGet(bin1D.capacity));
 
-        System.out.println(sum);
+        //AtomicInteger sum = new AtomicInteger();
+       // configuration.forEach(bin1D -> sum.addAndGet(bin1D.capacity));
+
+        //System.out.println(sum);
     }
 }

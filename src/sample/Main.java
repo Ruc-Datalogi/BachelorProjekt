@@ -40,6 +40,7 @@ public class Main extends Application {
 
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+
         calculate.setOnAction((e) -> {
             painter.fillBlank();
             if(state.selectedDimension == Dimension.ONEDIMENSION){
@@ -61,6 +62,7 @@ public class Main extends Application {
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
                 simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),2000000000,0.000000000001f,hello,hello.size(),0.9999f);
 
+                System.out.println(simulatedAnnealing.finalSolution);
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
 
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));

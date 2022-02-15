@@ -22,7 +22,6 @@ public class SimulatedAnnealing {
             delta = a1.optimizationFactor - newOptimizationFactor;
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
-
                 //System.out.println("Entered if statement 2");
                 a1.solution = newSolution;                       //Choose the next solution as the current solution.
                 a1.optimizationFactor = newOptimizationFactor;
