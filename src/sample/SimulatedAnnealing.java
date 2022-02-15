@@ -42,7 +42,7 @@ public class SimulatedAnnealing {
             energyList.add(String.valueOf(a1.optimizationFactor));
             iterList.add(i);
 
-            if ( 500000 < i ) {
+            if ( 5000 < i ) {
                 break;
             }
         }

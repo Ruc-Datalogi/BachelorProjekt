@@ -53,15 +53,16 @@ public class TwoOpt extends Algorithm {
             bin1.box.remove(boxIndex1);
             bin2.box.remove(boxIndex2);
         }
-        double fractionalFill=0;
+        double wastedCapacity=0;
+
         for (Bin1D bin : configuration){
             if(bin.maxCapacity>0){
-                fractionalFill+= (bin.capacity*1d)/(bin.maxCapacity*1d)*100d;
-                
+                wastedCapacity+=bin.maxCapacity-bin.capacity;
+
             }
 
         }
-        float recipFracFill=(float) (25/fractionalFill);
+        float recipFracFill=(float) (wastedCapacity);
         this.optimizationFactor= recipFracFill;
         //this.optimizationFactor = configuration.size();
         solution = configuration;
