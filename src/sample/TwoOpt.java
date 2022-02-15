@@ -53,7 +53,17 @@ public class TwoOpt extends Algorithm {
             bin1.box.remove(boxIndex1);
             bin2.box.remove(boxIndex2);
         }
-        this.optimizationFactor = configuration.size();
+        double fractionalFill=0;
+        for (Bin1D bin : configuration){
+            if(bin.maxCapacity>0){
+                fractionalFill+= (bin.capacity*1d)/(bin.maxCapacity*1d)*100d;
+                
+            }
+
+        }
+        float recipFracFill=(float) (25/fractionalFill);
+        this.optimizationFactor= recipFracFill;
+        //this.optimizationFactor = configuration.size();
         solution = configuration;
     }
 }
