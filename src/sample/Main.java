@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,7 +23,6 @@ public class Main extends Application {
     final double FONT_SIZE = 46.0;
     final double BUTTON_HEIGHT = 40.0;
     final double BUTTON_WIDTH = 100.0;
-    final State state = new State();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -37,32 +37,31 @@ public class Main extends Application {
 
         Label title = new Label("Bin Packing Problem");
         title.setFont(new Font(FONT_SIZE));
-
+        Button showPlot = new Button("Show Plot");
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
             painter.fillBlank();
-            if(state.selectedDimension == Dimension.ONEDIMENSION){
-                ArrayList<Bin1D> hello = Calculator.calculateOneDimension(state.selectedAlgorithm, dataImporter.bins1D, 100);
+            if(State.getState().selectedDimension == Dimension.ONEDIMENSION){
+                ArrayList<Bin1D> algoSolution1D = Calculator.calculateOneDimension(State.getState().selectedAlgorithm, dataImporter.bins1D, 100);
 
                 AtomicInteger sum = new AtomicInteger();
-                hello.forEach((b) -> sum.addAndGet(b.capacity));
-                System.out.println(sum);
-                System.out.println(hello.size());
-                for(int i = 0 ; i < hello.size() ; i++ ) {
-                    painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), hello.get(i));
+                algoSolution1D.forEach((b) -> sum.addAndGet(b.capacity));
+                for(int i = 0 ; i < algoSolution1D.size() ; i++ ) {
+                    painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), algoSolution1D.get(i));
                 }
 
-
-
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),2000000000,0.000000000001f,hello,hello.size(),0.9999f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200000000,0.0000000001f, algoSolution1D.size(),0.999f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
-
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
                 }
             }
+        });
+
+        showPlot.setOnAction(a -> {
+            plotPython();
         });
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
@@ -84,7 +83,7 @@ public class Main extends Application {
         HBox hBox = new HBox();
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, calculate);
+        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, calculate, showPlot);
 
         BorderPane.setAlignment(title, Pos.CENTER);
         BorderPane.setMargin(title, new Insets(16));
@@ -102,14 +101,21 @@ public class Main extends Application {
     private void changeDimensionState (Dimension d, ComboBox c) {
         c.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(d)));
         c.getSelectionModel().selectFirst();
-        state.selectedDimension = d;
+        State.getState().selectedDimension = d;
+    }
+
+    private void plotPython(){
+        if(State.getState().iterList != null ) {
+            PythonPlotter scriptPython = new PythonPlotter();
+            scriptPython.runPython(State.getState().iterList, State.getState().energyList);
+        }
     }
 
     private void changeAlgorithmState (Algorithms a) {
-        state.selectedAlgorithm = a;
+        State.getState().selectedAlgorithm = a;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         launch(args);
     }
 }

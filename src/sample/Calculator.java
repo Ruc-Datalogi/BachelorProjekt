@@ -29,10 +29,6 @@ public class Calculator {
                 }
             }
 
-            for(Bin1D bin : bins){
-                System.out.println(bin.toString());
-            }
-
             return bins;
     }
 
@@ -45,7 +41,6 @@ public class Calculator {
                 if (overCapacity(Integer.valueOf(box), bin )) {
                     bin.incrementCapacity(Integer.valueOf(box));
                     bin.box.add(Integer.valueOf(box));
-                    System.out.println("over cap");
                     break;
                 }
                 if (bin == getLastElement(bins) && !overCapacity(Integer.valueOf(box), bin )) {
@@ -53,7 +48,6 @@ public class Calculator {
                     tempBin.box.add(Integer.valueOf(box));
                     tempBin.incrementCapacity(Integer.valueOf(box));
                     bins.add(tempBin);
-                    System.out.println("new cap");
                     break;
                 }
             }

@@ -1,5 +1,6 @@
 package sample;
 
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -7,11 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TwoOpt extends Algorithm {
 
     ArrayList<Bin1D> configuration;
-
     TwoOpt(ArrayList<Bin1D> configuration){
         this.configuration = configuration;
+        this.solution = configuration;
     }
-
 
     @Override
     void execute() {
@@ -53,12 +53,7 @@ public class TwoOpt extends Algorithm {
             bin1.box.remove(boxIndex1);
             bin2.box.remove(boxIndex2);
         }
-
         this.optimizationFactor = configuration.size();
-
-        AtomicInteger sum = new AtomicInteger();
-        configuration.forEach(bin1D -> sum.addAndGet(bin1D.capacity));
-
-        System.out.println(sum);
+        solution = configuration;
     }
 }
