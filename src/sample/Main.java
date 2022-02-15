@@ -56,7 +56,7 @@ public class Main extends Application {
 
 
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),20000000,0.00001f,hello,hello.size(),0.9f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),2000000000,0.000000000001f,hello,hello.size(),0.9999f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
 
