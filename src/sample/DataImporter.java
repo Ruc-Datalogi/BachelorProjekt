@@ -1,7 +1,6 @@
 package sample;
 
 import java.io.*;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Scanner; // Import the Scanner class to read text files
 
