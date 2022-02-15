@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 public enum Algorithms {
-    FIRST_FIT("First Fit ", Dimension.ONEDIMENSION ), WORST_FIT("Worst Fit", Dimension.ONEDIMENSION), TESTER("TESTER", Dimension.TWODIMENSION);
+    FIRST_FIT("First Fit ", Dimension.ONEDIMENSION ), WORST_FIT("Best Fit", Dimension.ONEDIMENSION),
+    NEXT_FIT("Next Fit", Dimension.ONEDIMENSION),
+    TESTER("TESTER", Dimension.TWODIMENSION);
 
     private String label;
     private Dimension dimension;
