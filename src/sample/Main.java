@@ -52,8 +52,11 @@ public class Main extends Application {
                 for(int i = 0 ; i < hello.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), hello.get(i));
                 }
-
-
+                int firstFitCapacity=0;
+                for(Bin1D bin : hello){
+                    firstFitCapacity+=bin.capacity;
+                }
+                System.out.println("Selected algo binCap: " + firstFitCapacity);
 
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
                 simulatedAnnealing.simulatedAnnealing(new TwoOpt(hello),2000000000,0.000000000001f,hello,hello.size(),0.9999f);
@@ -62,6 +65,13 @@ public class Main extends Application {
 
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
                 }
+                //for validation
+                int totalSA_BoxCapacity=0;
+                for(Object obin : simulatedAnnealing.finalSolution){
+                    Bin1D bin = (Bin1D) obin;
+                    totalSA_BoxCapacity+=bin.capacity;
+                }
+                System.out.println("SA binCap: " + totalSA_BoxCapacity);
             }
         });
 
