@@ -29,5 +29,20 @@ public class Painter {
         gc.setFill(Color.BLACK);
         gc.fillText(String.valueOf(bin1D.capacity), x + BOX1D_WIDTH/4 , y + BOX1D_HEIGHT/2);
     }
+    public void drawBox2D(int x1, int y1, int x2,int y2){
+        gc.setFill(Color.LIGHTGREY);
+        gc.fillRect(x1,y1,x2-x1,y2-y1);
+        gc.setFill(Color.BLACK);
+        //gc.fillText(String.valueOf(bin.capacity), x + BOX1D_WIDTH/4 , y + BOX1D_HEIGHT/2);
+    }
+    public void drawBoxesInBin(Bin2D bin){
+        int iterator=0;
+        for(Box2D box : bin.containedBoxes){
+            gc.setFill(Color.hsb(iterator,1,1));
+            iterator+=55;
+            gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
+
+        }
+    }
 
 }

@@ -3,21 +3,21 @@ package sample;
 import java.util.ArrayList;
 
 public class Bin2D {
-    int w,l;
+    int w,h;
     Point2D iteratorPoint;
     int furthestW=0;
     ArrayList<Box2D> containedBoxes = new ArrayList<Box2D>();
-    public Bin2D(int width, int length) {
+    public Bin2D(int width, int height) {
         this.w = width;
-        this.l = length;
-        this.iteratorPoint =new Point2D(0,length);
+        this.h = height;
+        this.iteratorPoint =new Point2D(0,height);
     }
 
     //First we check if the box can be placed on top of the iterator point
     //We check
     boolean canContain(Box2D box){
         //First check if the box can be empty Bin first:
-        if(box.l>this.l || box.w>this.l){
+        if(box.h>this.h || box.w>this.h){
             //Box cannot be inside bin ever
             return false;
 
@@ -40,18 +40,10 @@ public class Bin2D {
     }
 
     boolean addBox(Box2D box){
-        if (iteratorPoint.y+box.l>this.l){
-            iteratorPoint.x=furthestW;
-        }
-        if (canContain(box)) {
-            iteratorPoint.y+=box.l;
-            if(furthestW<(iteratorPoint.x+box.w)){
-                furthestW=iteratorPoint.x+box.w;
-            }
-            containedBoxes.add(box);
-            return true;
-        }
-        return false;
+
+        containedBoxes.add(box);
+        return true;
+
 
     }
 }

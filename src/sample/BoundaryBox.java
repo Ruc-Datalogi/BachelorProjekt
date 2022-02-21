@@ -62,4 +62,12 @@ public class BoundaryBox {
         return false;
 
     }
+
+    public Point2D getCornerA() {
+        return cornerA;
+    }
+
+    public Point2D getCornerB() {
+        return cornerB;
+    }
 }

@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main extends Application {
@@ -59,6 +60,26 @@ public class Main extends Application {
                 }
             }
         });
+        //Test
+        Bin2D testBin = new Bin2D(500,500);
+        testBin.addBox(new Box2D(0,0,20,20));
+        testBin.addBox(new Box2D(20,0,30,30));
+        testBin.addBox(new Box2D(0,30,40,40));
+        painter.drawBoxesInBin(testBin);
+        //painter.drawBox2D(100,100,200,200);
+
+        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,3,5,2,4)),
+                new ArrayList<Integer>(Arrays.asList(3,4,1,5,2)),
+                new ArrayList<Module>(Arrays.asList(
+                        new Module(1,1,1),
+                        new Module(2,1,1),
+                        new Module(3,1,1),
+                        new Module(4,1,1),
+                        new Module(5,1,1)
+                        )));
+        testSeq.calculatePlacementTable();
+
+
 
         showPlot.setOnAction(a -> {
             plotPython();
