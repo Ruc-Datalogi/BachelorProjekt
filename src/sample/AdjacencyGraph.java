@@ -5,23 +5,18 @@ import java.util.ArrayList;
 public class AdjacencyGraph {
     ArrayList<Vertex> vertices;
 
+    @Override
+    public String toString() {
+        return "AdjacencyGraph{" +
+                "vertices=" + vertices.toString() +
+                '}';
+    }
 
     public AdjacencyGraph(){
         vertices= new ArrayList<>();
     }
 
-    public void addVertex(Vertex v){
-        vertices.add(v);
-    }
-
-    public void addEdge(Vertex f,Vertex t, Integer w){
-        if(!(vertices.contains(f) && vertices.contains(t)) ) {
-            System.out.println(" Vertex not in graph");
-            return;
-        }
-        Edge e=new Edge(f, t,w);
-    }
-
+    /*
     public  void PrintGraph(){
         for (int i=0;i<vertices.size();i++)
         {
@@ -34,16 +29,20 @@ public class AdjacencyGraph {
             System.out.println(" ");
         }
     }
+    */
+
 }
 
 class Vertex implements Comparable<Vertex>{
-    String name;
     ArrayList<Edge> OutEdges;
     Integer dist = Integer.MAX_VALUE;
     boolean isVisited = false;
+    int x; int y; int id;
 
-    public Vertex(String id){
-        name = id;
+    public Vertex(int x,int y,int id){
+        this.id = id;
+        this.x = x;
+        this.y = y;
         OutEdges = new ArrayList<>();
     }
 
@@ -63,7 +62,8 @@ class Vertex implements Comparable<Vertex>{
     @Override
     public String toString() {
         return "Vertex{" +
-                "name='" + name + '\'' +
+                + this.x  + " " + this.y +
+                " id=" + this.id +
                 ", OutEdges=" + OutEdges +
                 ", dist=" + dist +
                 ", isVisited=" + isVisited +
@@ -75,15 +75,15 @@ class Edge implements Comparable<Edge> {
     Integer weight;
     Vertex from;
     Vertex to;
-
+/*
     @Override
     public String toString() {
         return "Edge{" +
                 "weight=" + weight +
-                ", from=" + from.name +
-                ", to=" + to.name +
+                ", from=" + from +
+                ", to=" + to +
                 '}';
-    }
+    }*/
 
     public Edge(Vertex from, Vertex to, Integer cost){
         this.from=from;

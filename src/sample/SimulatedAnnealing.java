@@ -1,6 +1,5 @@
 package sample;
 
-import javax.swing.plaf.basic.DefaultMenuLayout;
 import java.util.ArrayList;
 
 public class SimulatedAnnealing {

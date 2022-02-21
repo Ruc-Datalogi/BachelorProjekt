@@ -79,6 +79,7 @@ public class Main extends Application {
                         )));
         testSeq.calculatePlacementTable();
 
+        painter.drawGraph(null,null);
 
 
         showPlot.setOnAction(a -> {

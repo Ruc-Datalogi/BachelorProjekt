@@ -4,6 +4,9 @@ package sample;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
 
 public class Painter {
     Canvas canvas;
@@ -43,6 +46,32 @@ public class Painter {
             gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
 
         }
+    }
+
+    public void drawGraph(ArrayList<Integer> positive, ArrayList<Integer> negative){
+        /*
+        gc.setFill(Color.BLACK);
+        gc.setLineWidth(5);
+        int scale = 250;
+        gc.strokeLine(canvas.getWidth()/2+scale,canvas.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2+scale);
+        gc.strokeLine(canvas.getWidth()/2-scale,canvas.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2-scale);
+        gc.strokeLine(canvas.getWidth()/2+scale,canvas.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2-scale);
+        gc.strokeLine(canvas.getWidth()/2-scale,canvas.getHeight()/2,canvas.getWidth()/2,canvas.getHeight()/2+scale);
+*/
+
+/*
+
+        for (int i = 0; i < positive.size()-1; i++) {
+            for (int j = 0; j < negative.size()-1; j++) {
+                if(positive.get(i) == negative.get(j)){
+
+
+                }
+
+            }
+        }
+
+ */
     }
 
 }

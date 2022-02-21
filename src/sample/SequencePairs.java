@@ -1,8 +1,7 @@
 package sample;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class SequencePairs extends Algorithm{
@@ -17,30 +16,58 @@ public class SequencePairs extends Algorithm{
     }
 
     public void calculatePlacementTable(){
-
         for(Module mod : modules){
 
-                int posiPosition = positive.indexOf(mod.id);
-                int negiPositon = negative.indexOf(mod.id);
-                List<Integer> leftPosSlice = positive.subList(0, posiPosition);
+            //TODO remove index of
+            int posiPosition = positive.indexOf(mod.id);
+            int negiPositon = negative.indexOf(mod.id);
 
-                List<Integer> rightPosSlice = positive.subList(posiPosition+1, positive.size() );
-                List<Integer> leftNegiSlice = negative.subList(0, negiPositon);
-                List<Integer> rightNegiSlice = negative.subList(negiPositon+1, negative.size() );
-                /*
-                System.out.println(leftPosSlice);
-                System.out.println(rightPosSlice);
-                System.out.println(leftNegiSlice);
-                System.out.println(rightNegiSlice);
+            List<Integer> leftPosSlice   = positive.subList(0, posiPosition);
+            List<Integer> rightPosSlice  = positive.subList(posiPosition+1, positive.size() );
+            List<Integer> leftNegiSlice  = negative.subList(0, negiPositon);
+            List<Integer> rightNegiSlice = negative.subList(negiPositon+1, negative.size() );
 
-                 */
-                List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
-                rightCommon.retainAll(rightNegiSlice);
-                mod.RightOf = rightCommon;
+            mod.leftOf  = getCommon(leftPosSlice, leftNegiSlice);
+            mod.rightOf = getCommon(rightPosSlice, rightNegiSlice);
+            mod.above   = getCommon(rightNegiSlice,leftPosSlice);
+            mod.below   = getCommon(leftNegiSlice,rightPosSlice);
 
-                //System.out.println(mod.id  + " right of list: " + mod.RightOf.toString());
-
+            //System.out.println(mod);
         }
+
+        AdjacencyGraph hcg = new AdjacencyGraph(); //horizontally constructed graph,
+        HashMap<Integer,Vertex> idToVertexMap = new HashMap<>(); //given a module id we return a vertex
+
+        Vertex source = new Vertex(-1,-1,-1); //target node
+        Vertex target = new Vertex(-2,-2,-2); //source node
+
+        //construct the graph according to the positive and negative sequences
+        for (int i = 0; i < positive.size(); i++) {
+            for (int j = 0; j < negative.size(); j++) {
+                if (positive.get(i) == negative.get(j)){
+                    Vertex vertex = new Vertex(i,j,positive.get(i)); //whenever a node in the positive and negative sequence have the same module
+                    hcg.vertices.add(vertex);                        //we save its coordinates in the graph.
+                    System.out.println(vertex.toString());
+                    idToVertexMap.put(positive.get(i), vertex);
+                    break; //we can break out of the forloop if we have already found the single module corresponding to the coordinate.
+                }
+            }
+        }
+
+        for (Vertex fromVertex : hcg.vertices){
+            for (Integer id : modules.get(fromVertex.id-1).rightOf) {
+                Vertex toVertex = idToVertexMap.get(id);
+                fromVertex.addOutEdge(new Edge(fromVertex,toVertex,modules.get(fromVertex.id-1).width));
+            }
+        }
+
+        System.out.println(hcg.toString());
+    }
+
+    private List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
+        List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
+        rightCommon.retainAll(rightNegiSlice);
+        return rightCommon;
     }
 
     @Override
@@ -53,10 +80,24 @@ class Module{
     int id;
     int width;
     int height;
-    List<Integer> RightOf= new ArrayList<>();
-    List<Integer> LeftOf= new ArrayList<>();
-    List<Integer> Above= new ArrayList<>();
-    List<Integer> Below= new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Module{" +
+                "id=" + id +
+                ", width=" + width +
+                ", height=" + height +
+                ", RightOf=" + rightOf +
+                ", LeftOf=" + leftOf +
+                ", Above=" + above +
+                ", Below=" + below +
+                '}';
+    }
+
+    List<Integer> rightOf = new ArrayList<>();
+    List<Integer> leftOf  = new ArrayList<>();
+    List<Integer> above   = new ArrayList<>();
+    List<Integer> below   = new ArrayList<>();
 
     public Module(int id, int width, int height) {
         this.id = id;
