@@ -38,7 +38,7 @@ public class SequencePairs extends Algorithm{
                 rightCommon.retainAll(rightNegiSlice);
                 mod.RightOf = rightCommon;
 
-                System.out.println(mod.id  + " right of list: " + mod.RightOf.toString());
+                //System.out.println(mod.id  + " right of list: " + mod.RightOf.toString());
 
         }
     }
