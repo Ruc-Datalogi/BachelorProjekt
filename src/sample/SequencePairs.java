@@ -1,8 +1,6 @@
 package sample;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SequencePairs extends Algorithm{
     ArrayList<Integer> positive = new ArrayList<>();
@@ -20,7 +18,9 @@ public class SequencePairs extends Algorithm{
 
             //TODO remove index of
             int posiPosition = positive.indexOf(mod.id);
+            mod.setPositiveIndex(posiPosition);
             int negiPositon = negative.indexOf(mod.id);
+            mod.setNegativeIndex(negiPositon);
 
             List<Integer> leftPosSlice   = positive.subList(0, posiPosition);
             List<Integer> rightPosSlice  = positive.subList(posiPosition+1, positive.size() );
@@ -36,12 +36,52 @@ public class SequencePairs extends Algorithm{
         }
 
         AdjacencyGraph hcg = new AdjacencyGraph(); //horizontally constructed graph,
+        AdjacencyGraph vcg = new AdjacencyGraph(); //Vertically constructed graph
         HashMap<Integer,Vertex> idToVertexMap = new HashMap<>(); //given a module id we return a vertex
 
-        Vertex source = new Vertex(-1,-1,-1); //target node
-        Vertex target = new Vertex(-2,-2,-2); //source node
+        Vertex sourceHorizontal = new Vertex(-1,-1,-1); //target node
+        Vertex targetHorizontal = new Vertex(-2,-2,-2); //source node
+
+
 
         //construct the graph according to the positive and negative sequences
+        for(Module mod : modules){
+            Vertex vertexH = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
+
+            hcg.vertices.add(vertexH);
+
+
+
+
+            Vertex vertexV = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
+            vcg.vertices.add(vertexV);
+        }
+        System.out.println(modules);
+        Collections.sort(modules);
+        System.out.println(modules);
+
+        for(Vertex vH : hcg.vertices){
+            Module thisMod = modules.get(vH.id-1);
+            if(thisMod.leftOf.size()==0){
+                sourceHorizontal.addOutEdge(new Edge(sourceHorizontal,vH, thisMod.width));
+            }
+            if(thisMod.rightOf.size()==0){
+                targetHorizontal.addOutEdge(new Edge(vH,targetHorizontal, 0));
+            }else{
+                thisMod.rightOf.forEach(i -> vH.addOutEdge(new Edge(vH,hcg.vertices.get(i-1),modules.get(i-1).width)));
+            }
+        }
+
+        hcg.vertices.add(sourceHorizontal);
+        hcg.vertices.add(targetHorizontal);
+
+
+
+        System.out.println(hcg.vertices);
+
+
+        //System.out.println(hcg.vertices.toString());
+        /*
         for (int i = 0; i < positive.size(); i++) {
             for (int j = 0; j < negative.size(); j++) {
                 if (positive.get(i) == negative.get(j)){
@@ -53,15 +93,15 @@ public class SequencePairs extends Algorithm{
                 }
             }
         }
+         */
 
-        for (Vertex fromVertex : hcg.vertices){
+        /*for (Vertex fromVertex : hcg.vertices){
             for (Integer id : modules.get(fromVertex.id-1).rightOf) {
                 Vertex toVertex = idToVertexMap.get(id);
                 fromVertex.addOutEdge(new Edge(fromVertex,toVertex,modules.get(fromVertex.id-1).width));
             }
-        }
+        }*/
 
-        System.out.println(hcg.toString());
     }
 
     private List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
@@ -76,10 +116,12 @@ public class SequencePairs extends Algorithm{
     }
 
 }
-class Module{
+class Module implements Comparable<Module>{
     int id;
     int width;
     int height;
+    int positiveIndex=-1;
+    int negativeIndex=-1;
 
     @Override
     public String toString() {
@@ -103,5 +145,30 @@ class Module{
         this.id = id;
         this.width = width;
         this.height = height;
+    }
+    int getPositiveIndex(){
+        return positiveIndex;
+
+    }
+    int getNegativeIndex(){
+        return negativeIndex;
+    }
+
+    public void setPositiveIndex(int positiveIndex) {
+        this.positiveIndex = positiveIndex;
+    }
+
+    public void setNegativeIndex(int negativeIndex) {
+        this.negativeIndex = negativeIndex;
+    }
+
+    @Override
+    public int compareTo(Module otherMod) {
+        if(this.id>otherMod.id){
+            return 1;
+        }else if (this.id<otherMod.id){
+            return -1;
+        }
+        return 0;
     }
 }

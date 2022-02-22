@@ -68,14 +68,14 @@ public class Main extends Application {
         painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
 
-        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,3,5,2,4)),
-                new ArrayList<Integer>(Arrays.asList(3,4,1,5,2)),
+        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)),
+                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4)),
                 new ArrayList<Module>(Arrays.asList(
-                        new Module(1,1,1),
-                        new Module(2,1,1),
-                        new Module(3,1,1),
-                        new Module(4,1,1),
-                        new Module(5,1,1)
+                        new Module(1,2,4),
+                        new Module(2,1,3),
+                        new Module(3,2,2),
+                        new Module(4,3,4),
+                        new Module(5,2,1)
                         )));
         testSeq.calculatePlacementTable();
 
