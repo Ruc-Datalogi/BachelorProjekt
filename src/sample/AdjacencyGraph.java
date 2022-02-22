@@ -67,7 +67,8 @@ class Vertex implements Comparable<Vertex>{
                 ", OutEdges=" + OutEdges +
                 ", dist=" + dist +
                 ", isVisited=" + isVisited +
-                '}';
+                '}'
+                + "\n";
     }
 }
 
@@ -75,21 +76,23 @@ class Edge implements Comparable<Edge> {
     Integer weight;
     Vertex from;
     Vertex to;
-/*
+
+
     @Override
     public String toString() {
         return "Edge{" +
                 "weight=" + weight +
-                ", from=" + from +
-                ", to=" + to +
+                ", from=" + from.id +
+                ", to=" + to.id +
                 '}';
-    }*/
+    }
+
+
 
     public Edge(Vertex from, Vertex to, Integer cost){
         this.from=from;
         this.to=to;
         this.weight=cost;
-        this.from.addOutEdge(this);
     }
 
     @Override

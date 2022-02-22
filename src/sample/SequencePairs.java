@@ -42,11 +42,14 @@ public class SequencePairs extends Algorithm{
         Vertex sourceHorizontal = new Vertex(-1,-1,-1); //target node
         Vertex targetHorizontal = new Vertex(-2,-2,-2); //source node
 
+
+
         //construct the graph according to the positive and negative sequences
         for(Module mod : modules){
             Vertex vertexH = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
 
             hcg.vertices.add(vertexH);
+
 
 
 
@@ -62,7 +65,20 @@ public class SequencePairs extends Algorithm{
             if(thisMod.leftOf.size()==0){
                 sourceHorizontal.addOutEdge(new Edge(sourceHorizontal,vH, thisMod.width));
             }
+            if(thisMod.rightOf.size()==0){
+                targetHorizontal.addOutEdge(new Edge(vH,targetHorizontal, 0));
+            }else{
+                thisMod.rightOf.forEach(i -> vH.addOutEdge(new Edge(vH,hcg.vertices.get(i-1),modules.get(i-1).width)));
+            }
         }
+
+        hcg.vertices.add(sourceHorizontal);
+        hcg.vertices.add(targetHorizontal);
+
+
+
+        System.out.println(hcg.vertices);
+
 
         //System.out.println(hcg.vertices.toString());
         /*
