@@ -37,71 +37,92 @@ public class SequencePairs extends Algorithm{
 
         AdjacencyGraph hcg = new AdjacencyGraph(); //horizontally constructed graph,
         AdjacencyGraph vcg = new AdjacencyGraph(); //Vertically constructed graph
-        HashMap<Integer,Vertex> idToVertexMap = new HashMap<>(); //given a module id we return a vertex
 
         Vertex sourceHorizontal = new Vertex(-1,-1,-1); //target node
         Vertex targetHorizontal = new Vertex(-2,-2,-2); //source node
-
-
+        Vertex sourceVertical = new Vertex(-1,-1,-1); //target node
+        Vertex targetVertical = new Vertex(-1,-1,-1); //target node
 
         //construct the graph according to the positive and negative sequences
         for(Module mod : modules){
             Vertex vertexH = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
-
             hcg.vertices.add(vertexH);
-
-
-
-
             Vertex vertexV = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
             vcg.vertices.add(vertexV);
         }
-        System.out.println(modules);
-        Collections.sort(modules);
-        System.out.println(modules);
 
-        for(Vertex vH : hcg.vertices){
-            Module thisMod = modules.get(vH.id-1);
-            if(thisMod.leftOf.size()==0){
-                sourceHorizontal.addOutEdge(new Edge(sourceHorizontal,vH, thisMod.width));
-            }
-            if(thisMod.rightOf.size()==0){
-                targetHorizontal.addOutEdge(new Edge(vH,targetHorizontal, 0));
-            }else{
-                thisMod.rightOf.forEach(i -> vH.addOutEdge(new Edge(vH,hcg.vertices.get(i-1),modules.get(i-1).width)));
-            }
-        }
+        Collections.sort(modules); // Sort the modules to make sure the id matches with the index :)
+        createGraph(hcg, modules, sourceHorizontal, targetHorizontal, true);
+        createGraph(vcg, modules, sourceVertical, targetVertical, false);
 
         hcg.vertices.add(sourceHorizontal);
         hcg.vertices.add(targetHorizontal);
+        vcg.vertices.add(sourceVertical);
+        vcg.vertices.add(targetVertical);
+        int dist = getDist(sourceHorizontal);
+        int dist2 = getDist(sourceVertical);
+        System.out.println("Longest path (x,y): " + dist + " , " + dist2);
 
 
+        System.out.println("\n" + hcg.vertices);
+        System.out.println("\n" + vcg.vertices);
 
-        System.out.println(hcg.vertices);
+    }
 
+    /**
+     *
+     * @param graph the graph to mutates
+     * @param modules the list of the different modules
+     * @param source the source vertex for the graph
+     * @param target the target vertex for the graph
+     * @param isHorizontal boolean to construct the graph differently
+     */
 
-        //System.out.println(hcg.vertices.toString());
-        /*
-        for (int i = 0; i < positive.size(); i++) {
-            for (int j = 0; j < negative.size(); j++) {
-                if (positive.get(i) == negative.get(j)){
-                    Vertex vertex = new Vertex(i,j,positive.get(i)); //whenever a node in the positive and negative sequence have the same module
-                    hcg.vertices.add(vertex);                        //we save its coordinates in the graph.
-                    System.out.println(vertex.toString());
-                    idToVertexMap.put(positive.get(i), vertex);
-                    break; //we can break out of the forloop if we have already found the single module corresponding to the coordinate.
+    private void createGraph(AdjacencyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
+        for(Vertex vH : graph.vertices){
+            Module thisMod = modules.get(vH.id-1);
+            if(isHorizontal) {
+                if ( thisMod.leftOf.size() == 0 ){
+                    source.addOutEdge(new Edge(source,vH, thisMod.width));
+                }
+                if ( thisMod.rightOf.size()==0){
+                    vH.addOutEdge(new Edge(vH,target, 0));
+                } else {
+                    thisMod.rightOf.forEach(i -> vH.addOutEdge(new Edge(vH,graph.vertices.get(i-1),modules.get(i-1).width)));
+                }
+            } else {
+                if ( thisMod.below.size() == 0 ){
+                    source.addOutEdge(new Edge(source,vH, thisMod.height));
+                }
+                if ( thisMod.above.size()==0){
+                    vH.addOutEdge(new Edge(vH,target, 0));
+                } else {
+                    thisMod.above.forEach(i -> vH.addOutEdge(new Edge(vH,graph.vertices.get(i-1),modules.get(i-1).height)));
                 }
             }
         }
-         */
+    }
 
-        /*for (Vertex fromVertex : hcg.vertices){
-            for (Integer id : modules.get(fromVertex.id-1).rightOf) {
-                Vertex toVertex = idToVertexMap.get(id);
-                fromVertex.addOutEdge(new Edge(fromVertex,toVertex,modules.get(fromVertex.id-1).width));
+
+
+    private int getDist(Vertex inputVertex) {
+        Queue<Edge> queue = new LinkedList<>(inputVertex.OutEdges);
+        int dist = 0;
+
+        while (!queue.isEmpty()) {
+            Edge tempEdge = queue.remove();
+            Vertex tempVertex = tempEdge.to;
+            tempVertex.dist = tempEdge.weight;
+            if(!tempVertex.isVisited) {
+                tempVertex.isVisited = true;
+                tempVertex.addDistanceToEdges(tempVertex.dist);
+                queue.addAll(tempVertex.OutEdges);
             }
-        }*/
-
+            if(tempEdge.weight > dist ) {
+                dist = tempEdge.weight;
+            }
+        }
+        return dist;
     }
 
     private List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {

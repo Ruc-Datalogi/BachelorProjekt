@@ -35,7 +35,7 @@ public class AdjacencyGraph {
 
 class Vertex implements Comparable<Vertex>{
     ArrayList<Edge> OutEdges;
-    Integer dist = Integer.MAX_VALUE;
+    Integer dist = 0;
     boolean isVisited = false;
     int x; int y; int id;
 
@@ -69,6 +69,10 @@ class Vertex implements Comparable<Vertex>{
                 ", isVisited=" + isVisited +
                 '}'
                 + "\n";
+    }
+
+    public void addDistanceToEdges(int distance) {
+        OutEdges.forEach(edge -> edge.weight += distance);
     }
 }
 
