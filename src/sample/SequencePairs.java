@@ -6,6 +6,7 @@ public class SequencePairs extends Algorithm{
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
+    Bin2D testBin;
 
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positive = positive;
@@ -31,6 +32,7 @@ public class SequencePairs extends Algorithm{
             mod.rightOf = getCommon(rightPosSlice, rightNegiSlice);
             mod.above   = getCommon(rightNegiSlice,leftPosSlice);
             mod.below   = getCommon(leftNegiSlice,rightPosSlice);
+            System.out.println(mod);
 
             //System.out.println(mod);
         }
@@ -62,10 +64,11 @@ public class SequencePairs extends Algorithm{
         int dist = getDist(sourceHorizontal);
         int dist2 = getDist(sourceVertical);
         System.out.println("Longest path (x,y): " + dist + " , " + dist2);
+        testBin=generateCoordinatesForModules(hcg,vcg,dist2);
 
 
-        System.out.println("\n" + hcg.vertices);
-        System.out.println("\n" + vcg.vertices);
+        //System.out.println("\n" + hcg.vertices);
+        //System.out.println("\n" + vcg.vertices);
 
     }
 
@@ -105,14 +108,36 @@ public class SequencePairs extends Algorithm{
 
 
 
+
+    Bin2D generateCoordinatesForModules(AdjacencyGraph horizontal, AdjacencyGraph vertical, int height){
+        Bin2D bin = new Bin2D(500,500); //TODO don't hardcode fucking values
+        for(Vertex x : horizontal.vertices){
+            for(Vertex y : vertical.vertices){
+                if(x.id>-1 && x.id==y.id){
+                    Module currentMod = modules.get(x.id-1);
+                    Box2D currentBox = new Box2D(x.dist*50-currentMod.width*50, (height-y.dist)*50,currentMod.width*50, currentMod.height*50);
+                    bin.addBox(currentBox);
+
+                    //boxes.add()
+                }
+            }
+        }
+        return bin;
+    }
+
+
+
     private int getDist(Vertex inputVertex) {
+
         Queue<Edge> queue = new LinkedList<>(inputVertex.OutEdges);
         int dist = 0;
 
         while (!queue.isEmpty()) {
             Edge tempEdge = queue.remove();
             Vertex tempVertex = tempEdge.to;
-            tempVertex.dist = tempEdge.weight;
+            if(tempEdge.weight>tempVertex.dist) {
+                tempVertex.dist = tempEdge.weight;
+            }
             if(!tempVertex.isVisited) {
                 tempVertex.isVisited = true;
                 tempVertex.addDistanceToEdges(tempVertex.dist);

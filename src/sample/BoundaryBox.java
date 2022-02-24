@@ -70,4 +70,12 @@ public class BoundaryBox {
     public Point2D getCornerB() {
         return cornerB;
     }
+
+    @Override
+    public String toString() {
+        return "BoundaryBox{" +
+                "cornerA=" + cornerA +
+                ", cornerB=" + cornerB +
+                '}';
+    }
 }

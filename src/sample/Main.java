@@ -65,7 +65,7 @@ public class Main extends Application {
         testBin.addBox(new Box2D(0,0,20,20));
         testBin.addBox(new Box2D(20,0,30,30));
         testBin.addBox(new Box2D(0,30,40,40));
-        painter.drawBoxesInBin(testBin);
+        //painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
 
         SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)),
@@ -77,7 +77,19 @@ public class Main extends Application {
                         new Module(4,3,4),
                         new Module(5,2,1)
                         )));
+        SequencePairs newSeqTest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,2,4,5,3)),
+                new ArrayList<Integer>(Arrays.asList(3,2,4,1,5)),
+                new ArrayList<Module>(Arrays.asList(
+                        new Module(1,4,3),
+                        new Module(2,2,2),
+                        new Module(3,3,1),
+                        new Module(4,1,1),
+                        new Module(5,2,3)
+                        )));
+        //newSeqTest.calculatePlacementTable();
+        //painter.drawBoxesInBin(newSeqTest.testBin);
         testSeq.calculatePlacementTable();
+        painter.drawBoxesInBin(testSeq.testBin);
 
         painter.drawGraph(null,null);
 
