@@ -44,6 +44,9 @@ public class Painter {
             gc.setFill(Color.hsb(iterator,1,1));
             iterator+=55;
             gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
+            gc.setFill(Color.WHITE);
+            
+            gc.fillText("[" + box.w/50 +"," + box.h/50 + "]",box.getCornerA().x + box.w/2, box.getCornerA().y + box.h/2);
 
         }
     }

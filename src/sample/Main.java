@@ -86,10 +86,20 @@ public class Main extends Application {
                         new Module(4,1,1),
                         new Module(5,2,3)
                         )));
+
+        SequencePairs TestingNew = new SequencePairs(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2)),
+                new ArrayList<Integer>(Arrays.asList(3,1,2,5,4)),
+                new ArrayList<Module>(Arrays.asList(
+                        new Module(1,2,4),
+                        new Module(2,1,3),
+                        new Module(3,2,2),
+                        new Module(4,3,4),
+                        new Module(5,2,1)
+                )));
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
-        testSeq.calculatePlacementTable();
-        painter.drawBoxesInBin(testSeq.testBin);
+        TestingNew.calculatePlacementTable();
+        painter.drawBoxesInBin(TestingNew.testBin);
 
         painter.drawGraph(null,null);
 

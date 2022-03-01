@@ -64,16 +64,17 @@ public class SequencePairs extends Algorithm{
         //DFS(vcg.vertices.get(4));
 
         int dist = DFS(sourceHorizontal);
+        //System.out.println("hori complete");
         int dist2 =DFS(sourceVertical);
 
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
-        System.out.println("Longest path (x,y): " + dist + " , " + dist2);
-        /*System.out.println(hcg);
-        System.out.println(vcg);
+        /*System.out.println("Longest path (x,y): " + dist + " , " + dist2);
+        System.out.println(hcg);
+        System.out.println(vcg);*/
 
-         */
-        testBin=generateCoordinatesForModules(hcg,vcg,dist2);
+
+        testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
 
 
         //System.out.println("\n" + hcg.vertices);
@@ -118,15 +119,15 @@ public class SequencePairs extends Algorithm{
 
 
 
-    Bin2D generateCoordinatesForModules(AdjacencyGraph horizontal, AdjacencyGraph vertical, int height){
+    Bin2D generateCoordinatesForModules(AdjacencyGraph horizontal, AdjacencyGraph vertical,int width, int height){
         Bin2D bin = new Bin2D(500,500); //TODO don't hardcode fucking values
         for(Vertex x : horizontal.vertices){
             for(Vertex y : vertical.vertices){
                 if(x.id>-1 && x.id==y.id){
                     Module currentMod = modules.get(x.id-1);
 
-                    Box2D currentBox = new Box2D((currentMod.width-DFS(x))*50, (currentMod.height-DFS(y))*50,currentMod.width*50, currentMod.height*50);
-                    System.out.println("[" + x.id + "]: " + DFS(x) + "," + DFS(y));
+                    Box2D currentBox = new Box2D((width-DFS(x))*50, (DFS(y)-currentMod.height)*50,currentMod.width*50, currentMod.height*50);
+                    //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
 
                     //boxes.add()
@@ -153,28 +154,31 @@ public class SequencePairs extends Algorithm{
         return totalDist;
     }
 
-    private int DFSExplore(Vertex input,int depth, boolean visted[]){
-        //System.out.println(input);
+    private int DFSExplore(Vertex input,int depth, boolean visted[],int maxDepth){
+        //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
 
 
         input.addOutVerticesFromEdges();
         Iterator<Edge> i = input.OutEdges.listIterator();
         while(i.hasNext()){
             Edge tempEdge =i.next();
+            if(depth+tempEdge.weight>maxDepth){
+                maxDepth=depth+tempEdge.weight;
+            }
             if(tempEdge.to.id<0){
-                return DFSExplore(tempEdge.to,depth+tempEdge.weight,visted);
+                maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
             }else if(!visted[tempEdge.to.id-1]){
                 visted[tempEdge.to.id-1]=true;
-                return DFSExplore(tempEdge.to,depth+tempEdge.weight,visted);
+                maxDepth =DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
             }
         }
-        return depth;
+        return maxDepth;
     }
 
     private int DFS(Vertex input){
         boolean [] visted = new boolean[5];
-        return DFSExplore(input,0,visted);
-        //System.out.println("Distance for vertex: " + DFSExplore(input,0,visted));
+        return DFSExplore(input,0,visted,0);
+
 
 
     }
