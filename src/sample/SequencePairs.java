@@ -73,9 +73,6 @@ public class SequencePairs extends Algorithm {
         System.out.println(positive);
         System.out.println(negative);
 
-        if (optimizationFactor < 26) System.exit(2);
-
-
         testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
 
 
@@ -139,30 +136,29 @@ public class SequencePairs extends Algorithm {
         return bin;
     }
 
-    private int DFSExplore(Vertex input,int depth, boolean visted[],int maxDepth){
-            //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
+    private int DFSExplore(Vertex input,int depth,int maxDepth){
+        //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
 
 
-            input.addOutVerticesFromEdges();
-            Iterator<Edge> i = input.OutEdges.listIterator();
-            while(i.hasNext()){
-                Edge tempEdge =i.next();
-                if(depth+tempEdge.weight>maxDepth){
-                    maxDepth=depth+tempEdge.weight;
-                }
-                if(tempEdge.to.id<0){
-                    maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-                }else if(!visted[tempEdge.to.id-1]){
-                    visted[tempEdge.to.id-1]=true;
-                    maxDepth =DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-                }
+        input.addOutVerticesFromEdges();
+        Iterator<Edge> i = input.OutEdges.listIterator();
+        while(i.hasNext()){
+            Edge tempEdge =i.next();
+            if(depth+tempEdge.weight>maxDepth){
+                maxDepth=depth+tempEdge.weight;
             }
-            return maxDepth;
-        }
 
-        private int DFS(Vertex input){
-            boolean [] visted = new boolean[5];
-            return DFSExplore(input,0,visted,0);
+            maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,maxDepth);
+
+        }
+        return maxDepth;
+    }
+
+    private int DFS(Vertex input){
+
+        return DFSExplore(input,0,0);
+
+
 
     }
 
