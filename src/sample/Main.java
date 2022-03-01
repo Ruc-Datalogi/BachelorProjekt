@@ -98,8 +98,15 @@ public class Main extends Application {
                 )));
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
-        TestingNew.calculatePlacementTable();
-        painter.drawBoxesInBin(TestingNew.testBin);
+        testSeq.calculatePlacementTable();
+
+        SimulatedAnnealing sa = new SimulatedAnnealing();
+
+        sa.simulatedAnnealing(testSeq, 200,5,testSeq.optimizationFactor,0.5f);
+
+        System.out.println(sa.finalSolution);
+
+        painter.drawBoxesInBin(testSeq.testBin);
 
         painter.drawGraph(null,null);
 

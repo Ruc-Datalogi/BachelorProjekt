@@ -2,7 +2,7 @@ package sample;
 
 import java.util.*;
 
-public class SequencePairs extends Algorithm{
+public class SequencePairs extends Algorithm {
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
@@ -64,21 +64,23 @@ public class SequencePairs extends Algorithm{
         //DFS(vcg.vertices.get(4));
 
         int dist = DFS(sourceHorizontal);
-        //System.out.println("hori complete");
-        int dist2 =DFS(sourceVertical);
+        int dist2 = DFS(sourceVertical);
+        optimizationFactor = dist2*dist; //the variable we optimise for.
 
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
-        /*System.out.println("Longest path (x,y): " + dist + " , " + dist2);
-        System.out.println(hcg);
-        System.out.println(vcg);*/
+        System.out.println("Longest path (x,y): " + dist + " , " + dist2);
+        System.out.println(positive);
+        System.out.println(negative);
+
+        if (optimizationFactor < 26) System.exit(2);
 
 
         testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
 
 
         //System.out.println("\n" + hcg.vertices);
-        //System.out.println("\n" + vcg.vertices);
+        //System.out.println("\n" + vcg.vertices);*/
 
     }
 
@@ -137,78 +139,33 @@ public class SequencePairs extends Algorithm{
         return bin;
     }
 
-    private int getGeneratedDist(Vertex inputVertex){
-        Queue<Edge> queue = new LinkedList<>(inputVertex.OutEdges);
-        int totalDist=0;
-        while (!queue.isEmpty()) {
-            Edge tempEdge = queue.remove();
-            Vertex tempVertex = tempEdge.to;
-
-            queue.addAll(tempVertex.OutEdges);
-            //System.out.println(tempEdge);
-
-            if(tempEdge.weight > totalDist ) {
-                totalDist = tempEdge.weight;
-            }
-        }
-        return totalDist;
-    }
-
     private int DFSExplore(Vertex input,int depth, boolean visted[],int maxDepth){
-        //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
+            //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
 
 
-        input.addOutVerticesFromEdges();
-        Iterator<Edge> i = input.OutEdges.listIterator();
-        while(i.hasNext()){
-            Edge tempEdge =i.next();
-            if(depth+tempEdge.weight>maxDepth){
-                maxDepth=depth+tempEdge.weight;
+            input.addOutVerticesFromEdges();
+            Iterator<Edge> i = input.OutEdges.listIterator();
+            while(i.hasNext()){
+                Edge tempEdge =i.next();
+                if(depth+tempEdge.weight>maxDepth){
+                    maxDepth=depth+tempEdge.weight;
+                }
+                if(tempEdge.to.id<0){
+                    maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
+                }else if(!visted[tempEdge.to.id-1]){
+                    visted[tempEdge.to.id-1]=true;
+                    maxDepth =DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
+                }
             }
-            if(tempEdge.to.id<0){
-                maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-            }else if(!visted[tempEdge.to.id-1]){
-                visted[tempEdge.to.id-1]=true;
-                maxDepth =DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-            }
+            return maxDepth;
         }
-        return maxDepth;
-    }
 
-    private int DFS(Vertex input){
-        boolean [] visted = new boolean[5];
-        return DFSExplore(input,0,visted,0);
-
-
+        private int DFS(Vertex input){
+            boolean [] visted = new boolean[5];
+            return DFSExplore(input,0,visted,0);
 
     }
 
-
-    private int getDist(Vertex inputVertex) {
-
-        Queue<Edge> queue = new LinkedList<>(inputVertex.OutEdges);
-        int dist = 0;
-
-        while (!queue.isEmpty()) {
-            Edge tempEdge = queue.remove();
-            Vertex tempVertex = tempEdge.to;
-
-
-
-            if(tempEdge.weight>tempVertex.dist) {
-                tempVertex.dist = tempEdge.weight;
-            }
-            if(!tempVertex.isVisited) {
-                tempVertex.isVisited = true;
-                tempVertex.addDistanceToEdges(tempVertex.dist);
-                queue.addAll(tempVertex.OutEdges);
-            }
-            if(tempEdge.weight > dist ) {
-                dist = tempEdge.weight;
-            }
-        }
-        return dist;
-    }
 
     private List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
         List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
@@ -218,10 +175,28 @@ public class SequencePairs extends Algorithm{
 
     @Override
     void execute() {
-        System.out.println(":)");
-    }
+        this.calculatePlacementTable(); //clean the table
 
+        //Swap 1
+        Random random = new Random();
+        int rng = random.nextInt(positive.size());
+        int rng2 = random.nextInt(negative.size());
+
+        int idP = positive.get(rng);
+        int idP2 = positive.get(rng2);
+
+        Collections.swap(positive,rng,rng2);
+        Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
+        //
+
+        ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
+        solutions.add(positive);
+        solutions.add(negative);
+
+        this.solution = solutions;
+    }
 }
+
 class Module implements Comparable<Module>{
     int id;
     int width;

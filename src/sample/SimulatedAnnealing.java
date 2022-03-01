@@ -47,7 +47,7 @@ public class SimulatedAnnealing {
         }
         System.out.println("New solution size " + a1.solution.size());
         System.out.println("Iterations " + i);
-        int bucketSize = (int) iterList.size() / 500;
+        int bucketSize = iterList.size() / 500;
         ArrayList<String> tempEnergyList = new ArrayList<>();
         ArrayList<Integer> tempIterList = new ArrayList<>();
         for(int j = 0 ; j < iterList.size() -1 ; j += bucketSize) {
