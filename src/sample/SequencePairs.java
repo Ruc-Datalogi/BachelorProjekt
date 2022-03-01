@@ -154,7 +154,7 @@ public class SequencePairs extends Algorithm{
         return totalDist;
     }
 
-    private int DFSExplore(Vertex input,int depth, boolean visted[],int maxDepth){
+    private int DFSExplore(Vertex input,int depth,int maxDepth){
         //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
 
 
@@ -165,19 +165,16 @@ public class SequencePairs extends Algorithm{
             if(depth+tempEdge.weight>maxDepth){
                 maxDepth=depth+tempEdge.weight;
             }
-            if(tempEdge.to.id<0){
-                maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-            }else if(!visted[tempEdge.to.id-1]){
-                visted[tempEdge.to.id-1]=true;
-                maxDepth =DFSExplore(tempEdge.to,depth+tempEdge.weight,visted,maxDepth);
-            }
+
+            maxDepth = DFSExplore(tempEdge.to,depth+tempEdge.weight,maxDepth);
+
         }
         return maxDepth;
     }
 
     private int DFS(Vertex input){
-        boolean [] visted = new boolean[5];
-        return DFSExplore(input,0,visted,0);
+
+        return DFSExplore(input,0,0);
 
 
 
