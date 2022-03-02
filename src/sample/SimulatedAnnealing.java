@@ -7,32 +7,41 @@ public class SimulatedAnnealing {
     ArrayList<String> energyList = new ArrayList<>();
     ArrayList<Integer> iterList = new ArrayList<>();
 
+    float delta;
+
+
     <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float initialOptimizationFactor, float coolingRate) {
+        System.out.println("initial opt" + initialOptimizationFactor);
+
         float tCur = tMax; //tCur is the current temperature at a given step
-        a1.optimizationFactor = initialOptimizationFactor;
-        float delta;
+
+        float previousOptimizationFactor = initialOptimizationFactor;
 
         int i = 0;
 
         while (tCur > tMin){
             i++;
             a1.execute();
-            float newOptimizationFactor = a1.optimizationFactor;
             ArrayList<Object> newSolution = new ArrayList<>(a1.solution);
 
-            delta = a1.optimizationFactor - newOptimizationFactor;
-            System.out.println(tCur);
+            delta = a1.optimizationFactor - previousOptimizationFactor;
+            previousOptimizationFactor = a1.optimizationFactor;
+            System.out.println("Temperature is " + tCur + " min is: " + tMin);
+
+            System.out.println("Delta " + delta);
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
-                //System.out.println("Entered if statement 2");
                 a1.solution = newSolution;                       //Choose the next solution as the current solution.
-                a1.optimizationFactor = newOptimizationFactor;
+                a1.optimizationFactor = previousOptimizationFactor;
+                //System.out.println("picked good");
 
-            } else if ( Math.exp(delta/tCur) > Math.random())  {
-                //System.out.println("Entered if statement 1");
-                tCur += 10;
+                //TODO analyse the exponential seems very high
+            } else if ( Math.exp((-delta)/tCur) > Math.random())  {
+
+                System.out.println("e is " + Math.exp((-delta)/tCur));
+
                 a1.solution = newSolution;                        //Choose the next solution as the current solution.
-                a1.optimizationFactor = newOptimizationFactor;
+                a1.optimizationFactor = previousOptimizationFactor;
             }
 
             tCur *= coolingRate;
@@ -40,16 +49,15 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
             energyList.add(String.valueOf(a1.optimizationFactor));
             iterList.add(i);
-
-            if ( 5000 < i ) {
-                break;
-            }
         }
+
         System.out.println("New solution size " + a1.solution.size());
         System.out.println("Iterations " + i);
         int bucketSize = iterList.size() / 500;
         ArrayList<String> tempEnergyList = new ArrayList<>();
         ArrayList<Integer> tempIterList = new ArrayList<>();
+
+        System.out.println(iterList.size());
         for(int j = 0 ; j < iterList.size() -1 ; j += bucketSize) {
             tempEnergyList.add(energyList.get(j));
             tempIterList.add(iterList.get(j));

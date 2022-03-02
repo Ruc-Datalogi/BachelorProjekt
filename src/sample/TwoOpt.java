@@ -3,7 +3,6 @@ package sample;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TwoOpt extends Algorithm {
 
@@ -62,8 +61,7 @@ public class TwoOpt extends Algorithm {
             }
 
         }
-        float recipFracFill=(float) (wastedCapacity);
-        this.optimizationFactor= recipFracFill;
+        this.optimizationFactor = this.configuration.size();
         //this.optimizationFactor = configuration.size();
         solution = configuration;
     }

@@ -65,7 +65,8 @@ public class SequencePairs extends Algorithm {
 
         int dist = DFS(sourceHorizontal);
         int dist2 = DFS(sourceVertical);
-        optimizationFactor = dist2*dist; //the variable we optimise for.
+        super.optimizationFactor = dist2*dist; //the variable we optimise for.
+
 
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
@@ -73,13 +74,23 @@ public class SequencePairs extends Algorithm {
         System.out.println(positive);
         System.out.println(negative);
 
-        testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
+
+        if (optimizationFactor < bestDist) {
+            testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
+
+            bestBin = testBin;
+            bestDist = (int) optimizationFactor;
+
+        }
 
 
         //System.out.println("\n" + hcg.vertices);
         //System.out.println("\n" + vcg.vertices);*/
 
     }
+
+    public Bin2D bestBin = new Bin2D();
+    public int bestDist = Integer.MAX_VALUE;
 
     /**
      *
@@ -183,11 +194,22 @@ public class SequencePairs extends Algorithm {
 
         Collections.swap(positive,rng,rng2);
         Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
-        //
+        //Single swap
+        rng = random.nextInt(positive.size());
+        rng2 = random.nextInt(positive.size());
+        Collections.swap(positive,rng,rng2);
+        //Single swap
+        rng = random.nextInt(positive.size());
+        rng2 = random.nextInt(positive.size());
+        Collections.swap(negative,rng,rng2);
+
 
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positive);
         solutions.add(negative);
+
+        System.out.println("this = " + this);
+
 
         this.solution = solutions;
     }

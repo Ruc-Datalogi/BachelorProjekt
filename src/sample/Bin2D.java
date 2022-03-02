@@ -13,6 +13,8 @@ public class Bin2D {
         this.iteratorPoint =new Point2D(0,height);
     }
 
+    public Bin2D(){}
+
     //First we check if the box can be placed on top of the iterator point
     //We check
     boolean canContain(Box2D box){

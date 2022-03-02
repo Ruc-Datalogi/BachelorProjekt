@@ -29,7 +29,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
-        Canvas mainCanvas = new Canvas(600,600);
+        Canvas mainCanvas = new Canvas(1200,1200);
         Painter painter = new Painter(mainCanvas);
         painter.fillBlank();
         DataImporter dataImporter = new DataImporter();
@@ -53,7 +53,7 @@ public class Main extends Application {
                 }
 
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200000000,0.0000000001f, algoSolution1D.size(),0.999f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),2000000000,0.00000000001f, algoSolution1D.size(),0.999f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
@@ -68,14 +68,18 @@ public class Main extends Application {
         //painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
 
-        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)),
-                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4)),
+        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5,6,7,8,9)),
+                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4,6,7,8,9)),
                 new ArrayList<Module>(Arrays.asList(
                         new Module(1,2,4),
                         new Module(2,1,3),
                         new Module(3,2,2),
                         new Module(4,3,4),
-                        new Module(5,2,1)
+                        new Module(5,2,1),
+                        new Module(6,2,1),
+                        new Module(7,5,1),
+                        new Module(8,2,9),
+                        new Module(9,2,3)
                         )));
         SequencePairs newSeqTest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,2,4,5,3)),
                 new ArrayList<Integer>(Arrays.asList(3,2,4,1,5)),
@@ -102,11 +106,13 @@ public class Main extends Application {
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
 
-        sa.simulatedAnnealing(testSeq, 200,5,testSeq.optimizationFactor,0.5f);
+        sa.simulatedAnnealing(testSeq, 2000000,0.00001f,testSeq.optimizationFactor,0.9999f);
 
         System.out.println(sa.finalSolution);
 
-        painter.drawBoxesInBin(testSeq.testBin);
+        painter.drawBoxesInBin(testSeq.bestBin);
+
+        System.out.println(testSeq.bestBin);
 
         painter.drawGraph(null,null);
 
@@ -146,6 +152,7 @@ public class Main extends Application {
         primaryStage.setTitle("Drengene");
         primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(mainBorderPane, 1000, 800));
+        primaryStage.setResizable(true);
         primaryStage.show();
     }
 
