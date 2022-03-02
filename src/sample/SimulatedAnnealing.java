@@ -17,10 +17,15 @@ public class SimulatedAnnealing {
 
         float previousOptimizationFactor = initialOptimizationFactor;
 
+        a1.execute();
+        ArrayList<Object> oldSolution; // we have to save the old solution if we dont pick any in the if statements since .execute() always produces a new solution.
+
         int i = 0;
 
         while (tCur > tMin){
             i++;
+            float oldOptimizationFactor = a1.optimizationFactor;
+            oldSolution = new ArrayList<>(a1.solution);
             a1.execute();
             ArrayList<Object> newSolution = new ArrayList<>(a1.solution);
 
@@ -29,6 +34,10 @@ public class SimulatedAnnealing {
             System.out.println("Temperature is " + tCur + " min is: " + tMin);
 
             System.out.println("Delta " + delta);
+
+
+            a1.solution = oldSolution;
+            a1.optimizationFactor = oldOptimizationFactor;
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
                 a1.solution = newSolution;                       //Choose the next solution as the current solution.
@@ -49,6 +58,7 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
             energyList.add(String.valueOf(a1.optimizationFactor));
             iterList.add(i);
+
         }
 
         System.out.println("New solution size " + a1.solution.size());
