@@ -1,11 +1,12 @@
+out/
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+
 ### Example user template template
 ### Example user template
-
-# IntelliJ project files
-.idea
-*.iml
-out
-gen
 
 # Compiled class file
 *.class
