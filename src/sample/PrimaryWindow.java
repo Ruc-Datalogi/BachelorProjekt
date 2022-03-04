@@ -3,7 +3,6 @@ package sample;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -11,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,41 +64,27 @@ public class PrimaryWindow {
         //painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
 
-        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)),
-                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4)),
+        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5,6,7,8,9)),
+                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4,6,7,8,9)),
                 new ArrayList<Module>(Arrays.asList(
                         new Module(1,2,4),
                         new Module(2,1,3),
                         new Module(3,2,2),
                         new Module(4,3,4),
-                        new Module(5,2,1)
-                )));
-        SequencePairs newSeqTest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,2,4,5,3)),
-                new ArrayList<Integer>(Arrays.asList(3,2,4,1,5)),
-                new ArrayList<Module>(Arrays.asList(
-                        new Module(1,4,3),
-                        new Module(2,2,2),
-                        new Module(3,3,1),
-                        new Module(4,1,1),
-                        new Module(5,2,3)
+                        new Module(5,2,2),
+                        new Module(6,5,1),
+                        new Module(7,3,1),
+                        new Module(8,2,2),
+                        new Module(9,2,5)
                 )));
 
-        SequencePairs TestingNew = new SequencePairs(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2)),
-                new ArrayList<Integer>(Arrays.asList(3,1,2,5,4)),
-                new ArrayList<Module>(Arrays.asList(
-                        new Module(1,2,4),
-                        new Module(2,1,3),
-                        new Module(3,2,2),
-                        new Module(4,3,4),
-                        new Module(5,2,1)
-                )));
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
         testSeq.calculatePlacementTable();
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
 
-        sa.simulatedAnnealing(testSeq, 200,5,testSeq.optimizationFactor,0.5f);
+        sa.simulatedAnnealing(testSeq, 2000000,0.1f,testSeq.optimizationFactor,0.999f);
 
         System.out.println(sa.finalSolution);
 
