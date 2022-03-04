@@ -1,8 +1,11 @@
 package sample;
 
+import java.util.ArrayList;
+
 public class State {
     public Dimension selectedDimension = Dimension.ONEDIMENSION;
     public Algorithms selectedAlgorithm = Algorithms.FIRST_FIT;
+    public ArrayList<Module> modules = new ArrayList<>();
     public String energyList;
     public String iterList;
     static State state;

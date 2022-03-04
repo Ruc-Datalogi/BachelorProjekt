@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PrimaryWindow {
@@ -25,11 +26,13 @@ public class PrimaryWindow {
     public static BorderPane createMainWindow(){
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
-        Canvas mainCanvas = new Canvas(600,600);
+        Canvas mainCanvas = new Canvas(800,800);
         Painter painter = new Painter(mainCanvas);
         painter.fillBlank();
         DataImporter dataImporter = new DataImporter();
-        dataImporter.loadFile("./src/Data/N1C1W1_A.BPP");
+        dataImporter.loadFile1D("./src/Data/N1C1W1_A.BPP");
+        dataImporter.loadFile2D("./src/Data/2D_DataSet.csv");
+        ArrayList<Integer> test = randomModuleIds(25);
         Calculator.firstFit(dataImporter.bins1D, 100);
 
         Label title = new Label("Bin Packing Problem");
@@ -49,7 +52,7 @@ public class PrimaryWindow {
                 }
 
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200000000,0.0000000001f, algoSolution1D.size(),0.999f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),20000,0.0001f, algoSolution1D.size(),0.999f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
@@ -63,20 +66,11 @@ public class PrimaryWindow {
         testBin.addBox(new Box2D(0,30,40,40));
         //painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
-
-        SequencePairs testSeq = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5,6,7,8,9)),
-                new ArrayList<Integer>(Arrays.asList(2,3,5,1,4,6,7,8,9)),
-                new ArrayList<Module>(Arrays.asList(
-                        new Module(1,2,4),
-                        new Module(2,1,3),
-                        new Module(3,2,2),
-                        new Module(4,3,4),
-                        new Module(5,2,2),
-                        new Module(6,5,1),
-                        new Module(7,3,1),
-                        new Module(8,2,2),
-                        new Module(9,2,5)
-                )));
+        System.out.println(randomModuleIds(State.getState().modules.size()));
+        SequencePairs testSeq = new SequencePairs(randomModuleIds(State.getState().modules.size()),
+                randomModuleIds(State.getState().modules.size()),
+                State.getState().modules
+                );
 
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
@@ -84,7 +78,7 @@ public class PrimaryWindow {
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
 
-        sa.simulatedAnnealing(testSeq, 2000000,0.1f,testSeq.optimizationFactor,0.999f);
+        sa.simulatedAnnealing(testSeq, 20000000,0.1f,testSeq.optimizationFactor,0.999f);
 
         System.out.println(sa.finalSolution);
 
@@ -139,6 +133,21 @@ public class PrimaryWindow {
             PythonPlotter scriptPython = new PythonPlotter();
             scriptPython.runPython(State.getState().iterList, State.getState().energyList);
         }
+    }
+
+    private static ArrayList<Integer> randomModuleIds(int size) {
+        ArrayList<Integer> tempList = new ArrayList<>(size);
+        ArrayList<Integer> outputList = new ArrayList<>(size);
+        Random r = new Random();
+        for (int i = 1 ; i <= size ; i++){
+            tempList.add(i);
+        }
+        while (tempList.size() > 0){
+            int index = r.nextInt(tempList.size());
+            outputList.add(tempList.get(index));
+            tempList.remove(index);
+        }
+        return outputList;
     }
 
     private static void changeAlgorithmState (Algorithms a) {

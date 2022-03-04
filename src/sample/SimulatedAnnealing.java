@@ -15,49 +15,47 @@ public class SimulatedAnnealing {
 
         float tCur = tMax; //tCur is the current temperature at a given step
 
-        float previousOptimizationFactor = initialOptimizationFactor;
-
-        a1.execute();
-        ArrayList<Object> oldSolution; // we have to save the old solution if we dont pick any in the if statements since .execute() always produces a new solution.
+        float currentOptimizationFactor = initialOptimizationFactor;
+        float lastAcceptedOpti = initialOptimizationFactor;
+        ArrayList<?> lastAcceptedSolution = new ArrayList<>(); // we have to save the old solution if we dont pick any in the if statements since .execute() always produces a new solution.
 
         int i = 0;
 
         while (tCur > tMin){
             i++;
-            float oldOptimizationFactor = a1.optimizationFactor;
-            oldSolution = new ArrayList<>(a1.solution);
+            currentOptimizationFactor = a1.optimizationFactor;
+            a1.solution = lastAcceptedSolution;
+            a1.optimizationFactor = lastAcceptedOpti;
             a1.execute();
-            ArrayList<Object> newSolution = new ArrayList<>(a1.solution);
+            ArrayList<Object> currentSolution = new ArrayList<>(a1.solution);
 
-            delta = a1.optimizationFactor - previousOptimizationFactor;
-            previousOptimizationFactor = a1.optimizationFactor;
-            System.out.println("Temperature is " + tCur + " min is: " + tMin);
+            delta = currentOptimizationFactor - a1.optimizationFactor;
 
-            System.out.println("Delta " + delta);
-
-
-            a1.solution = oldSolution;
-            a1.optimizationFactor = oldOptimizationFactor;
-
+            System.out.println("delta outside" + delta);
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
-                a1.solution = newSolution;                       //Choose the next solution as the current solution.
-                a1.optimizationFactor = previousOptimizationFactor;
-                //System.out.println("picked good");
+                System.out.println("inside " + delta + " "+  a1.optimizationFactor + " " + currentOptimizationFactor);
 
+                a1.solution = currentSolution;                       //Choose the next solution as the current solution.
+                a1.optimizationFactor = currentOptimizationFactor;
+                //System.out.println("picked good");
+                iterList.add(i);
+                energyList.add(String.valueOf(a1.optimizationFactor));
+
+                lastAcceptedSolution = a1.solution;
+                lastAcceptedOpti = currentOptimizationFactor;
                 //TODO analyse the exponential seems very high
             } else if ( Math.exp((-delta)/tCur) > Math.random())  {
 
-                System.out.println("e is " + Math.exp((-delta)/tCur));
-
-                a1.solution = newSolution;                        //Choose the next solution as the current solution.
-                a1.optimizationFactor = previousOptimizationFactor;
+                iterList.add(i);
+                energyList.add(String.valueOf(a1.optimizationFactor));
+                lastAcceptedSolution = currentSolution; //Choose the next solution as the current solution.
+                lastAcceptedOpti = a1.optimizationFactor;
+                a1.optimizationFactor = currentOptimizationFactor;
             }
 
             tCur *= coolingRate;
             //System.out.printf(String.valueOf(a1.solution));
             //System.out.println("Temp after step: " + tCur);
-            energyList.add(String.valueOf(a1.optimizationFactor));
-            iterList.add(i);
 
         }
 

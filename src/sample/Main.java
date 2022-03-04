@@ -24,8 +24,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Drengene");
-        primaryStage.setResizable(false);
-        primaryStage.setScene(new Scene(PrimaryWindow.createMainWindow(), 1000, 800));
+        primaryStage.setResizable(true);
+        primaryStage.setScene(new Scene(PrimaryWindow.createMainWindow(), 1200, 800));
         primaryStage.show();
     }
 

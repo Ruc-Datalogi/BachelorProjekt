@@ -7,7 +7,8 @@ public class SequencePairs extends Algorithm {
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
     Bin2D testBin;
-
+    int iterationsSinceBest = 0;
+    float bestOptimazitionFactor;
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positive = positive;
         this.negative = negative;
@@ -63,17 +64,20 @@ public class SequencePairs extends Algorithm {
         vcg.vertices.add(targetVertical);
         //DFS(vcg.vertices.get(4));
 
-        int dist = DFS(sourceHorizontal);
-        int dist2 = DFS(sourceVertical);
+        int dist = Math.abs(DFS(sourceHorizontal));
+        int dist2 = Math.abs(DFS(sourceVertical));
         super.optimizationFactor = dist2*dist; //the variable we optimise for.
 
+        if (dist2*dist < super.optimizationFactor){
+            bestOptimazitionFactor = dist2*dist;
+        }
 
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
-        System.out.println("Longest path (x,y): " + dist + " , " + dist2);
+        /*System.out.println("Longest path (x,y): " + dist + " , " + dist2);
         System.out.println(positive);
         System.out.println(negative);
-
+         */
 
         if (optimizationFactor < bestDist) {
             testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
@@ -91,7 +95,6 @@ public class SequencePairs extends Algorithm {
 
     public Bin2D bestBin = new Bin2D();
     public int bestDist = Integer.MAX_VALUE;
-
     /**
      *
      * @param graph the graph to mutates
@@ -130,13 +133,13 @@ public class SequencePairs extends Algorithm {
 
 
     Bin2D generateCoordinatesForModules(AdjacencyGraph horizontal, AdjacencyGraph vertical,int width, int height){
-        Bin2D bin = new Bin2D(500,500); //TODO don't hardcode fucking values
+        Bin2D bin = new Bin2D(5000,5000); //TODO don't hardcode fucking values
         for(Vertex x : horizontal.vertices){
             for(Vertex y : vertical.vertices){
                 if(x.id>-1 && x.id==y.id){
                     Module currentMod = modules.get(x.id-1);
 
-                    Box2D currentBox = new Box2D((width-DFS(x))*50, (DFS(y)-currentMod.height)*50,currentMod.width*50, currentMod.height*50);
+                    Box2D currentBox = new Box2D((width-DFS(x))*2, (DFS(y)-currentMod.height)*2,currentMod.width*2, currentMod.height*2);
                     //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
 
@@ -184,34 +187,48 @@ public class SequencePairs extends Algorithm {
     void execute() {
         this.calculatePlacementTable(); //clean the table
 
-        //Swap 1
         Random random = new Random();
         int rng = random.nextInt(positive.size());
         int rng2 = random.nextInt(negative.size());
+        int randomInt = random.nextInt(3);
 
         int idP = positive.get(rng);
         int idP2 = positive.get(rng2);
 
-        Collections.swap(positive,rng,rng2);
-        Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
-        //Single swap
-        rng = random.nextInt(positive.size());
-        rng2 = random.nextInt(positive.size());
-        Collections.swap(positive,rng,rng2);
-        //Single swap
-        rng = random.nextInt(positive.size());
-        rng2 = random.nextInt(positive.size());
-        Collections.swap(negative,rng,rng2);
+
+        if(bestOptimazitionFactor < super.optimizationFactor){
+            iterationsSinceBest = 0;
+        }
 
 
+        //Swap 1
+        if(iterationsSinceBest < 5000) {
+            Collections.swap(positive,rng,rng2);
+            Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
+        } else {
+            //Single swap
+            iterationsSinceBest = 0;
+            rng = random.nextInt(positive.size());
+            rng2 = random.nextInt(positive.size());
+            Collections.swap(positive,rng,rng2);
+        }
+        /*
+        else {
+            //Single swap
+            rng = random.nextInt(positive.size());
+            rng2 = random.nextInt(positive.size());
+            Collections.swap(negative,rng,rng2);
+        }
+        */
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positive);
         solutions.add(negative);
-
+        /*
         System.out.println("this = " + this);
-
+        */
 
         this.solution = solutions;
+        iterationsSinceBest++;
     }
 }
 
