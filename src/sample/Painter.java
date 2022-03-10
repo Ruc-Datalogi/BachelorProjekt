@@ -17,6 +17,7 @@ public class Painter {
     public Painter(Canvas c) {
         this.canvas = c;
         this.gc = c.getGraphicsContext2D();
+        fillBlank();
     }
 
     public void fillBlank() {

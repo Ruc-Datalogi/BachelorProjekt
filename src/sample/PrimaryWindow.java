@@ -7,10 +7,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -21,23 +24,24 @@ public class PrimaryWindow {
     final static double FONT_SIZE = 46.0;
     final static double BUTTON_HEIGHT = 40.0;
     final static double BUTTON_WIDTH = 100.0;
-
+    final static double CANVAS_HEIGHT = 800.0;
+    final static double CANVAS_WIDTH = 1200.0;
 
     public static BorderPane createMainWindow(){
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
-        Canvas mainCanvas = new Canvas(800,800);
+        Canvas mainCanvas = new Canvas(CANVAS_WIDTH,CANVAS_HEIGHT);
         Painter painter = new Painter(mainCanvas);
-        painter.fillBlank();
         DataImporter dataImporter = new DataImporter();
         dataImporter.loadFile1D("./src/Data/N1C1W1_A.BPP");
         dataImporter.loadFile2D("./src/Data/2D_DataSet.csv");
-        ArrayList<Integer> test = randomModuleIds(25);
-        Calculator.firstFit(dataImporter.bins1D, 100);
-
         Label title = new Label("Bin Packing Problem");
         title.setFont(new Font(FONT_SIZE));
         Button showPlot = new Button("Show Plot");
+        showPlot.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        showPlot.setOnAction(a -> {
+            plotPython();
+        });
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
@@ -66,9 +70,8 @@ public class PrimaryWindow {
         testBin.addBox(new Box2D(0,30,40,40));
         //painter.drawBoxesInBin(testBin);
         //painter.drawBox2D(100,100,200,200);
-        System.out.println(randomModuleIds(State.getState().modules.size()));
-        SequencePairs testSeq = new SequencePairs(randomModuleIds(State.getState().modules.size()),
-                randomModuleIds(State.getState().modules.size()),
+        SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
+                CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules
                 );
 
@@ -84,21 +87,23 @@ public class PrimaryWindow {
         testSeq.calculatePlacementTable();
         testSeq2.calculatePlacementTable();
         painter.drawBoxesInBin(testSeq2.testBin);
+
         /*
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.9f);
-
         System.out.println(sa.finalSolution);
-
         painter.drawBoxesInBin(testSeq.testBin);
-
         painter.drawGraph(null,null);
-
          */
 
-        showPlot.setOnAction(a -> {
-            plotPython();
+        mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                System.exit(1);
+            }
+            e.consume();
         });
+
+
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
         comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
@@ -142,21 +147,6 @@ public class PrimaryWindow {
             PythonPlotter scriptPython = new PythonPlotter();
             scriptPython.runPython(State.getState().iterList, State.getState().energyList);
         }
-    }
-
-    private static ArrayList<Integer> randomModuleIds(int size) {
-        ArrayList<Integer> tempList = new ArrayList<>(size);
-        ArrayList<Integer> outputList = new ArrayList<>(size);
-        Random r = new Random();
-        for (int i = 1 ; i <= size ; i++){
-            tempList.add(i);
-        }
-        while (tempList.size() > 0){
-            int index = r.nextInt(tempList.size());
-            outputList.add(tempList.get(index));
-            tempList.remove(index);
-        }
-        return outputList;
     }
 
     private static void changeAlgorithmState (Algorithms a) {
