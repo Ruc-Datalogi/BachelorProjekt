@@ -41,6 +41,14 @@ public class SequencePairs extends Algorithm {
         AdjacencyGraph hcg = new AdjacencyGraph(); //horizontally constructed graph,
         AdjacencyGraph vcg = new AdjacencyGraph(); //Vertically constructed graph
 
+        TEMPAdjanceyGraph thcg = new TEMPAdjanceyGraph();
+        TEMPAdjanceyGraph tvcg = new TEMPAdjanceyGraph();
+
+        TempVertex sourceH = new TempVertex(0,-1);
+        TempVertex targetH = new TempVertex(0, -2);
+        TempVertex sourceV = new TempVertex(0, -1);
+        TempVertex targetV = new TempVertex(0, -2);
+
         Vertex sourceHorizontal = new Vertex(-1,-1,-1); //target node
         Vertex targetHorizontal = new Vertex(-2,-2,-2); //source node
         Vertex sourceVertical = new Vertex(-1,-1,-1); //target node
@@ -49,29 +57,44 @@ public class SequencePairs extends Algorithm {
         //construct the graph according to the positive and negative sequences
         for(Module mod : modules){
             Vertex vertexH = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
+            TempVertex tempVertexH = new TempVertex(mod.width, mod.id);
+            thcg.vertices.add(tempVertexH);
             hcg.vertices.add(vertexH);
+
             Vertex vertexV = new Vertex(mod.positiveIndex,mod.negativeIndex,mod.id);
+            TempVertex tempVertexV = new TempVertex(mod.height, mod.id);
             vcg.vertices.add(vertexV);
+            tvcg.vertices.add(tempVertexV);
         }
 
         Collections.sort(modules); // Sort the modules to make sure the id matches with the index :)
         createGraph(hcg, modules, sourceHorizontal, targetHorizontal, true);
         createGraph(vcg, modules, sourceVertical, targetVertical, false);
+        createTempGraph(thcg, modules, sourceH, targetH, true);
+        createTempGraph(tvcg, modules, sourceV, targetV, false);
 
         hcg.vertices.add(sourceHorizontal);
         hcg.vertices.add(targetHorizontal);
         vcg.vertices.add(sourceVertical);
         vcg.vertices.add(targetVertical);
-        //DFS(vcg.vertices.get(4));
 
-        int dist = Math.abs(DFS(sourceHorizontal));
-        int dist2 = Math.abs(DFS(sourceVertical));
+        thcg.vertices.add(sourceH);
+        thcg.vertices.add(targetH);
+        tvcg.vertices.add(sourceV);
+        tvcg.vertices.add(targetV);
+
+        //DFS(vcg.vertices.get(4));
+        //System.out.println("Temp methods DFS: [" + DFS(sourceH)+ "," + DFS(sourceV));
+        int dist = Math.abs(TEMPDFS(sourceH));
+        int dist2 = Math.abs(TEMPDFS(sourceV));
+
+        //System.out.println("Pop " + DFSTArget(sourceH, thcg.vertices.get(3)));
         super.optimizationFactor = dist2*dist; //the variable we optimise for.
 
         if (dist2*dist < super.optimizationFactor){
             bestOptimazitionFactor = dist2*dist;
         }
-
+        System.out.println(thcg.toString());
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
         /*System.out.println("Longest path (x,y): " + dist + " , " + dist2);
@@ -129,17 +152,64 @@ public class SequencePairs extends Algorithm {
         }
     }
 
+    private void createTempGraph(TEMPAdjanceyGraph graph, ArrayList<Module> modules, TempVertex source, TempVertex target, boolean isHorizontal) {
+        for (TempVertex v : graph.vertices) {
+            Module thisMod = modules.get(v.id - 1);
+
+            if (isHorizontal) {
+                if (thisMod.leftOf.size() == 0) {
+                    source.neighbors.add(v);
+                }
+                if (thisMod.rightOf.size() == 0) {
+                    v.neighbors.add(target);
+                } else {
+                    thisMod.rightOf.forEach(index -> v.neighbors.add(graph.vertices.get(index - 1)));
+                }
+            } else {
+                if (thisMod.below.size() == 0) {
+                    source.neighbors.add(v);
+                }
+                if (thisMod.above.size() == 0) {
+                    v.neighbors.add(target);
+                } else {
+                    thisMod.above.forEach(index -> v.neighbors.add(graph.vertices.get(index - 1)));
+                }
+            }
+
+
+        }
+    }
+
+    Bin2D TEMPgenerateCoordinatesForModules(TEMPAdjanceyGraph horizontal, TEMPAdjanceyGraph vertical,int width){
+        Bin2D bin = new Bin2D(5000,5000); //TODO don't hardcode fucking values
+        int scalar = 50;
+        for(TempVertex x : horizontal.vertices){
+            for(TempVertex y : vertical.vertices){
+                if(x.id == y.id){
+                    Module currentMod = modules.get(x.id-1);
+
+                    Box2D currentBox = new Box2D(20, (TEMPDFS(y)-currentMod.height)*scalar,currentMod.width*scalar, currentMod.height*scalar);
+                    currentBox.setId(x.id);
+                    //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
+                    bin.addBox(currentBox);
+                }
+            }
+        }
+        return bin;
+    }
 
 
 
     Bin2D generateCoordinatesForModules(AdjacencyGraph horizontal, AdjacencyGraph vertical,int width, int height){
         Bin2D bin = new Bin2D(5000,5000); //TODO don't hardcode fucking values
+        int scalar = 50;
         for(Vertex x : horizontal.vertices){
             for(Vertex y : vertical.vertices){
                 if(x.id>-1 && x.id==y.id){
                     Module currentMod = modules.get(x.id-1);
 
-                    Box2D currentBox = new Box2D((width-DFS(x))*2, (DFS(y)-currentMod.height)*2,currentMod.width*2, currentMod.height*2);
+                    Box2D currentBox = new Box2D((width-DFS(x))*scalar, (DFS(y)-currentMod.height)*scalar,currentMod.width*scalar, currentMod.height*scalar);
+                    currentBox.setId(x.id);
                     //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
 
@@ -152,8 +222,6 @@ public class SequencePairs extends Algorithm {
 
     private int DFSExplore(Vertex input,int depth,int maxDepth){
         //System.out.println("Id: " + input.id + ", depth: " + depth + ", max: " +maxDepth);
-
-
         input.addOutVerticesFromEdges();
         Iterator<Edge> i = input.OutEdges.listIterator();
         while(i.hasNext()){
@@ -172,10 +240,40 @@ public class SequencePairs extends Algorithm {
 
         return DFSExplore(input,0,0);
 
-
-
     }
 
+    private int TEMPDFS(TempVertex input) {
+        return TEMPDFSExplore(input, 0, 0);
+    }
+
+    private int TEMPDFSExplore(TempVertex input, int depth, int maxDepth) {
+        for(TempVertex v : input.neighbors) {
+            if (depth + v.weight > maxDepth) {
+                maxDepth = depth + v.weight;
+                if (v.maxDepth < depth) {
+                    v.setMaxDepth(depth);
+                }
+            }
+            maxDepth = TEMPDFSExplore(v, depth + v.weight, maxDepth);
+        }
+        System.out.println("maxdepth: " + maxDepth);
+        return maxDepth;
+    }
+
+    private int DFSTArget(TempVertex input, TempVertex target) {
+        return DFSTargetExplore(input, target, 0,0);
+    }
+
+    private int DFSTargetExplore(TempVertex input, TempVertex target, int depth, int maxDepth){
+        if(input.id == target.id) return maxDepth;
+        for(TempVertex v: input.neighbors) {
+            if(depth + v.weight > maxDepth && v.id == target.id ){
+                maxDepth = depth;
+            }
+            maxDepth = DFSTargetExplore(v, target,depth + v.weight, maxDepth);
+        }
+        return maxDepth;
+    }
 
     private List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
         List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
@@ -202,7 +300,7 @@ public class SequencePairs extends Algorithm {
 
 
         //Swap 1
-        if(iterationsSinceBest < 5000) {
+        if(iterationsSinceBest < 250) {
             Collections.swap(positive,rng,rng2);
             Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
         } else {

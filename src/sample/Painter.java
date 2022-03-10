@@ -46,9 +46,14 @@ public class Painter {
             gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
             gc.setFill(Color.WHITE);
             
-            gc.fillText("[" + box.w/50 +"," + box.h/50 + "]",box.getCornerA().x + box.w/2, box.getCornerA().y + box.h/2);
+            gc.fillText("[ id: "  + box.id +  " [" + box.w/50 + "," + box.h/50 + "]" + "]",box.getCornerA().x + box.w/2, box.getCornerA().y + box.h/2);
 
         }
+    }
+
+    public void drawBoxes(TEMPAdjanceyGraph tH, TEMPAdjanceyGraph tV) {
+        ArrayList<Integer> x_cor = new ArrayList<>();
+
     }
 
     public void drawGraph(ArrayList<Integer> positive, ArrayList<Integer> negative){

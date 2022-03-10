@@ -33,6 +33,56 @@ public class AdjacencyGraph {
 
 }
 
+class TEMPAdjanceyGraph {
+    ArrayList<TempVertex> vertices = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "AdjacencyGraph{" +
+                "vertices=" + vertices.toString() +
+                '}';
+    }
+
+}
+
+class TempVertex {
+    int weight;
+    int id;
+    int maxDepth = -1;
+    ArrayList<TempVertex> neighbors = new ArrayList<>();
+
+    public TempVertex(int weight, int id){
+        this.weight = weight;
+        this.id = id;
+    }
+
+    public void addNeighbor(TempVertex v) {
+        neighbors.add(v);
+    }
+
+    public void setMaxDepth(int dist) {
+        this.maxDepth = dist;
+    }
+
+    private String getNeighbors() {
+        String s = "";
+        for(TempVertex v : neighbors) {
+            s += v.id + ",";
+        }
+        return s;
+    }
+
+    @Override
+    public String toString() {
+        return "TempVertex{" +
+                "weight=" + weight +
+                ", id=" + id +
+                ", neighbors=" + getNeighbors() +
+                "dist=" + maxDepth +
+                "}\n";
+    }
+}
+
 class Vertex implements Comparable<Vertex>{
     ArrayList<Edge> OutEdges;
     ArrayList<Vertex> OutVertices= new ArrayList<>();

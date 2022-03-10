@@ -2,7 +2,7 @@ package sample;
 
 //A 2 dimensional box with a width and a height
 public class Box2D extends BoundaryBox{
-    int w,h;
+    int w,h, id;
     public Box2D(int width, int height) {
         super(new Point2D(0,0),new Point2D(width,height));
         w=width;
@@ -15,5 +15,8 @@ public class Box2D extends BoundaryBox{
         h=height;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
 }

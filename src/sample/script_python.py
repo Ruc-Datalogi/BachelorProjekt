@@ -14,7 +14,7 @@ def Convert(s):
     return float_list
 
 
-def input(x , y) :
+def input(x , y):
     # plot
     fig, ax = plt.subplots()
     ax.scatter(x, y)

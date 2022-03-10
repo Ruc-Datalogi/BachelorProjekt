@@ -31,9 +31,7 @@ public class SimulatedAnnealing {
 
             delta = currentOptimizationFactor - a1.optimizationFactor;
 
-            System.out.println("delta outside" + delta);
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
-                System.out.println("inside " + delta + " "+  a1.optimizationFactor + " " + currentOptimizationFactor);
 
                 a1.solution = currentSolution;                       //Choose the next solution as the current solution.
                 a1.optimizationFactor = currentOptimizationFactor;
@@ -57,7 +55,16 @@ public class SimulatedAnnealing {
             //System.out.printf(String.valueOf(a1.solution));
             //System.out.println("Temp after step: " + tCur);
 
+            if (tCur < 1){
+
+                tCur += 5000;
+            }
+
+            if(i > 25000) break;
         }
+
+
+
 
         System.out.println("New solution size " + a1.solution.size());
         System.out.println("Iterations " + i);

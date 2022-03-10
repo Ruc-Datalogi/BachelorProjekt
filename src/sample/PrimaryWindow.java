@@ -52,7 +52,7 @@ public class PrimaryWindow {
                 }
 
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),20000,0.0001f, algoSolution1D.size(),0.999f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.000001f, algoSolution1D.size(),0.99999f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
@@ -72,13 +72,21 @@ public class PrimaryWindow {
                 State.getState().modules
                 );
 
+        SequencePairs testSeq2 = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)) , new ArrayList<Integer>(Arrays.asList(2,3,5,5,1,4)), new ArrayList<Module>(Arrays.asList(
+                new Module(1,2,4),
+                new Module(2, 1,3),
+                new Module(3,2,2),
+                new Module(4,3,4),
+                new Module(5,2,1)
+        )));
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
         testSeq.calculatePlacementTable();
-
+        testSeq2.calculatePlacementTable();
+        painter.drawBoxesInBin(testSeq2.testBin);
+        /*
         SimulatedAnnealing sa = new SimulatedAnnealing();
-
-        sa.simulatedAnnealing(testSeq, 20000000,0.1f,testSeq.optimizationFactor,0.999f);
+        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.9f);
 
         System.out.println(sa.finalSolution);
 
@@ -86,6 +94,7 @@ public class PrimaryWindow {
 
         painter.drawGraph(null,null);
 
+         */
 
         showPlot.setOnAction(a -> {
             plotPython();

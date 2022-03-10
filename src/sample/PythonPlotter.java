@@ -17,6 +17,7 @@ public class PythonPlotter {
                     yCor
             };
             try {
+                System.out.println(xCor +"\n" + yCor);
                 Runtime.getRuntime().exec(cmd);
             } catch (Exception e) {
                 System.out.println(e);
