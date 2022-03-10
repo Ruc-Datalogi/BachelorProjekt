@@ -4,9 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -25,7 +23,10 @@ public class PrimaryWindow {
     final static double BUTTON_HEIGHT = 40.0;
     final static double BUTTON_WIDTH = 100.0;
     final static double CANVAS_HEIGHT = 800.0;
-    final static double CANVAS_WIDTH = 1200.0;
+    final static double CANVAS_WIDTH = 1100.0;
+    final static double TEXTAREA_WIDTH = 360.0;
+    static TextArea debugTextField = new TextArea();
+
 
     public static BorderPane createMainWindow(){
         BorderPane mainBorderPane = new BorderPane();
@@ -37,6 +38,13 @@ public class PrimaryWindow {
         dataImporter.loadFile2D("./src/Data/2D_DataSet.csv");
         Label title = new Label("Bin Packing Problem");
         title.setFont(new Font(FONT_SIZE));
+        debugTextField.setMaxHeight(mainCanvas.getHeight());
+        debugTextField.setPrefHeight(mainCanvas.getHeight());
+        debugTextField.setPrefWidth(TEXTAREA_WIDTH);
+        debugTextField.setMaxWidth(TEXTAREA_WIDTH);
+        debugTextField.setWrapText(true);
+        debugTextField.setEditable(true);
+        debugTextField.setDisable(true);
         Button showPlot = new Button("Show Plot");
         showPlot.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         showPlot.setOnAction(a -> {
@@ -54,7 +62,6 @@ public class PrimaryWindow {
                 for(int i = 0 ; i < algoSolution1D.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), algoSolution1D.get(i));
                 }
-
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
                 simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.000001f, algoSolution1D.size(),0.99999f);
 
@@ -103,8 +110,6 @@ public class PrimaryWindow {
             e.consume();
         });
 
-
-
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
         comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
         comboBoxAlgorithms.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(Dimension.ONEDIMENSION)));
@@ -122,17 +127,20 @@ public class PrimaryWindow {
         });
 
         HBox hBox = new HBox();
+        HBox mainHBox = new HBox();
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
         hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, calculate, showPlot);
-
+        mainHBox.setSpacing(8);
+        mainHBox.setAlignment(Pos.CENTER);
+        mainHBox.getChildren().addAll(mainCanvas, debugTextField);
         BorderPane.setAlignment(title, Pos.CENTER);
         BorderPane.setMargin(title, new Insets(16));
         topBorderPane.setCenter(hBox);
         topBorderPane.setTop(title);
 
         mainBorderPane.setTop(topBorderPane);
-        mainBorderPane.setCenter(mainCanvas);
+        mainBorderPane.setCenter(mainHBox);
         return mainBorderPane;
     }
 
@@ -147,6 +155,15 @@ public class PrimaryWindow {
             PythonPlotter scriptPython = new PythonPlotter();
             scriptPython.runPython(State.getState().iterList, State.getState().energyList);
         }
+    }
+
+    public static void changeDebugMessage(String s) {
+        String[] lines = s.split("\n");
+        String output = "";
+        for(String s2 : lines) {
+            output += s2 + "\n";
+        }
+        debugTextField.setText(output);
     }
 
     private static void changeAlgorithmState (Algorithms a) {

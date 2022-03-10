@@ -38,7 +38,7 @@ class TEMPAdjanceyGraph {
 
     @Override
     public String toString() {
-        return "AdjacencyGraph{" +
+        return "AdjacencyGraph{"+ "\n" +
                 "vertices=" + vertices.toString() +
                 '}';
     }

@@ -94,6 +94,7 @@ public class SequencePairs extends Algorithm {
         if (dist2*dist < super.optimizationFactor){
             bestOptimazitionFactor = dist2*dist;
         }
+        PrimaryWindow.changeDebugMessage(thcg.toString());
         System.out.println(thcg.toString());
         //int dist = getDist(sourceHorizontal);
         //int dist2 = getDist(sourceVertical);
@@ -251,12 +252,11 @@ public class SequencePairs extends Algorithm {
             if (depth + v.weight > maxDepth) {
                 maxDepth = depth + v.weight;
                 if (v.maxDepth < depth) {
-                    v.setMaxDepth(depth);
+                    v.setMaxDepth(depth );
                 }
             }
             maxDepth = TEMPDFSExplore(v, depth + v.weight, maxDepth);
         }
-        System.out.println("maxdepth: " + maxDepth);
         return maxDepth;
     }
 
