@@ -4,7 +4,6 @@ package sample;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
@@ -52,7 +51,7 @@ public class Painter {
         }
     }
 
-    public void drawBoxes(TEMPAdjanceyGraph tH, TEMPAdjanceyGraph tV) {
+    public void drawBoxes(AdjanceyGraph tH, AdjanceyGraph tV) {
         ArrayList<Integer> x_cor = new ArrayList<>();
 
     }

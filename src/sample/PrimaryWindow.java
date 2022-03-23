@@ -162,7 +162,7 @@ public class PrimaryWindow {
     private static void plotPython(){
         if(State.getState().iterList != null ) {
             PythonPlotter scriptPython = new PythonPlotter();
-            scriptPython.runPython(State.getState().iterList, State.getState().energyList);
+            scriptPython.runPython("", "");
         }
     }
 

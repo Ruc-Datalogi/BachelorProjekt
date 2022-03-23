@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class CommonFunctions {
@@ -20,5 +21,11 @@ public class CommonFunctions {
             tempList.remove(index);
         }
         return outputList;
+    }
+
+    public static List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
+        List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
+        rightCommon.retainAll(rightNegiSlice);
+        return rightCommon;
     }
 }
