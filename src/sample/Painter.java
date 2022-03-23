@@ -42,13 +42,13 @@ public class Painter {
     public void drawBoxesInBin(Bin2D bin){
         int iterator=0;
         for(Box2D box : bin.containedBoxes){
+            gc.setFill(Color.BLACK);
+            gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
             gc.setFill(Color.hsb(iterator,1,1));
             iterator+=55;
-            gc.fillRect(box.getCornerA().x,box.getCornerA().y,box.w,box.h);
-            gc.setFill(Color.WHITE);
-            
-            gc.fillText("[ id: "  + box.id +  " [" + box.w/50 + "," + box.h/50 + "]" + "]",box.getCornerA().x + box.w/2, box.getCornerA().y + box.h/2);
-
+            gc.fillRect(box.getCornerA().x + 1,box.getCornerA().y+1,box.w-2,box.h-2);
+            gc.setFill(Color.BLACK);
+            gc.fillText("[ id: "  + box.id + "]" +"\n" + "[" + box.w + "," + box.h + "]"  ,box.getCornerA().x + box.w/3, box.getCornerA().y + box.h/3);
         }
     }
 

@@ -6,6 +6,8 @@ public class SequencePairs extends Algorithm {
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
+    int worstIdHorizontal;
+    int worstIdVertical;
     Bin2D testBin;
     int iterationsSinceBest = 0;
     float bestOptimazitionFactor;
@@ -17,8 +19,12 @@ public class SequencePairs extends Algorithm {
 
     public void calculatePlacementTable(){
         for(Module mod : modules){
-
             //TODO remove index of
+
+            if(mod.id == worstIdHorizontal) {
+                mod.rotate();
+            }
+
             int posiPosition = positive.indexOf(mod.id);
             mod.setPositiveIndex(posiPosition);
             int negiPositon = negative.indexOf(mod.id);
@@ -83,42 +89,31 @@ public class SequencePairs extends Algorithm {
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
 
-        //DFS(vcg.vertices.get(4));
-        //System.out.println("Temp methods DFS: [" + DFS(sourceH)+ "," + DFS(sourceV));
         int dist = Math.abs(TEMPDFS(sourceH));
         int dist2 = Math.abs(TEMPDFS(sourceV));
-
-        //System.out.println("Pop " + DFSTArget(sourceH, thcg.vertices.get(3)));
-        super.optimizationFactor = dist2*dist; //the variable we optimise for.
+        worstIdHorizontal = worstRoute(targetH);
+        worstIdVertical = worstRoute(targetV);
+        super.optimizationFactor = dist2*dist; // the variable we optimise for.
+        worstRoute(targetH);
 
         if (dist2*dist < super.optimizationFactor){
             bestOptimazitionFactor = dist2*dist;
         }
-        PrimaryWindow.changeDebugMessage(thcg.toString());
-        System.out.println(thcg.toString());
-        //int dist = getDist(sourceHorizontal);
-        //int dist2 = getDist(sourceVertical);
-        /*System.out.println("Longest path (x,y): " + dist + " , " + dist2);
-        System.out.println(positive);
-        System.out.println(negative);
-         */
+
+        PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
 
         if (optimizationFactor < bestDist) {
-            testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
-
+            //testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
+            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
             bestBin = testBin;
             bestDist = (int) optimizationFactor;
-
         }
-
-
-        //System.out.println("\n" + hcg.vertices);
-        //System.out.println("\n" + vcg.vertices);*/
 
     }
 
     public Bin2D bestBin = new Bin2D();
     public int bestDist = Integer.MAX_VALUE;
+
     /**
      *
      * @param graph the graph to mutates
@@ -153,6 +148,22 @@ public class SequencePairs extends Algorithm {
         }
     }
 
+    private int worstRoute(TempVertex input) {
+        TempVertex biggest = input;
+        TempVertex currentVertex = input;
+        ArrayList<TempVertex> list = new ArrayList<>();
+        Random r = new Random();
+        while (currentVertex.previousVertex != null) {
+            currentVertex = currentVertex.previousVertex;
+            if(biggest.weight < currentVertex.weight && currentVertex.id > 0) {
+                biggest = currentVertex;
+                list.add(currentVertex);
+            }
+        }
+        return list.get(r.nextInt(list.size())).id;
+    }
+
+
     private void createTempGraph(TEMPAdjanceyGraph graph, ArrayList<Module> modules, TempVertex source, TempVertex target, boolean isHorizontal) {
         for (TempVertex v : graph.vertices) {
             Module thisMod = modules.get(v.id - 1);
@@ -181,16 +192,17 @@ public class SequencePairs extends Algorithm {
         }
     }
 
-    Bin2D TEMPgenerateCoordinatesForModules(TEMPAdjanceyGraph horizontal, TEMPAdjanceyGraph vertical,int width){
+    Bin2D TEMPgenerateCoordinatesForModules(TEMPAdjanceyGraph horizontal, TEMPAdjanceyGraph vertical, int wH, int wV){
         Bin2D bin = new Bin2D(5000,5000); //TODO don't hardcode fucking values
-        int scalar = 50;
-        for(TempVertex x : horizontal.vertices){
-            for(TempVertex y : vertical.vertices){
-                if(x.id == y.id){
-                    Module currentMod = modules.get(x.id-1);
+        int scalar = 800/Math.max(wH, wV);
 
-                    Box2D currentBox = new Box2D(20, (TEMPDFS(y)-currentMod.height)*scalar,currentMod.width*scalar, currentMod.height*scalar);
-                    currentBox.setId(x.id);
+        for(TempVertex vy : vertical.vertices){
+            for(TempVertex vx : horizontal.vertices){
+                if(vx.id == vy.id && vx.id > 0){
+                    Module currentMod = modules.get(vx.id-1);
+
+                    Box2D currentBox = new Box2D(vx.maxDepth*scalar, vy.maxDepth*scalar , currentMod.width*scalar, currentMod.height*scalar);
+                    currentBox.setId(vx.id);
                     //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
                 }
@@ -251,9 +263,10 @@ public class SequencePairs extends Algorithm {
         for(TempVertex v : input.neighbors) {
             if (depth + v.weight > maxDepth) {
                 maxDepth = depth + v.weight;
-                if (v.maxDepth < depth) {
-                    v.setMaxDepth(depth );
-                }
+            }
+            if (v.maxDepth < depth) {
+                v.setPreviousVertex(input);
+                v.setMaxDepth(depth);
             }
             maxDepth = TEMPDFSExplore(v, depth + v.weight, maxDepth);
         }
@@ -284,13 +297,17 @@ public class SequencePairs extends Algorithm {
     @Override
     void execute() {
         this.calculatePlacementTable(); //clean the table
-
+        int rng;
         Random random = new Random();
-        int rng = random.nextInt(positive.size());
-        int rng2 = random.nextInt(negative.size());
-        int randomInt = random.nextInt(3);
+        if(random.nextBoolean()) {
+            rng = worstIdHorizontal;
+        } else {
+            rng = worstIdVertical;
+        }
+        //int rng = random.nextInt(positive.size());
+        int rng2 = random.nextInt(positive.size());
 
-        int idP = positive.get(rng);
+        int idP = positive.get(rng - 1);
         int idP2 = positive.get(rng2);
 
 
@@ -298,18 +315,35 @@ public class SequencePairs extends Algorithm {
             iterationsSinceBest = 0;
         }
 
-
         //Swap 1
-        if(iterationsSinceBest < 250) {
-            Collections.swap(positive,rng,rng2);
+        if(iterationsSinceBest < 25) {
+            Collections.swap(positive,rng - 1 ,rng2);
             Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
         } else {
             //Single swap
             iterationsSinceBest = 0;
             rng = random.nextInt(positive.size());
             rng2 = random.nextInt(positive.size());
-            Collections.swap(positive,rng,rng2);
+            if(random.nextBoolean()) {
+                Collections.swap(positive,rng - 1,rng2);
+            } else {
+                Collections.swap(negative,rng - 1,rng2);
+            }
         }
+        if (random.nextBoolean()) {
+            ArrayList<Integer> subList1 = new ArrayList<>(positive.subList(0, positive.indexOf(rng)));
+            ArrayList<Integer> subList2 = new ArrayList<>(positive.subList(positive.indexOf(rng) + 1, positive.size()));
+            subList2.add(positive.get(positive.indexOf(rng)));
+            subList1.addAll(subList2);
+            positive = subList1;
+        } else {
+            ArrayList<Integer> subList1 = new ArrayList<>(negative.subList(0, negative.indexOf(rng)));
+            ArrayList<Integer> subList2 = new ArrayList<>(negative.subList(negative.indexOf(rng) + 1, negative.size()));
+            subList2.add(negative.get(negative.indexOf(rng)));
+            subList1.addAll(subList2);
+            negative = subList1;
+        }
+
         /*
         else {
             //Single swap
@@ -318,6 +352,7 @@ public class SequencePairs extends Algorithm {
             Collections.swap(negative,rng,rng2);
         }
         */
+
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positive);
         solutions.add(negative);
@@ -374,6 +409,12 @@ class Module implements Comparable<Module>{
 
     public void setNegativeIndex(int negativeIndex) {
         this.negativeIndex = negativeIndex;
+    }
+
+    public void rotate(){
+        int temp = this.width;
+        this.width = this.height;
+        this.height = temp;
     }
 
     @Override

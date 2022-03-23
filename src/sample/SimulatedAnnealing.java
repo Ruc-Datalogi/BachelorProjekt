@@ -6,15 +6,12 @@ public class SimulatedAnnealing {
     ArrayList<?> finalSolution;
     ArrayList<String> energyList = new ArrayList<>();
     ArrayList<Integer> iterList = new ArrayList<>();
-
     float delta;
-
 
     <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float initialOptimizationFactor, float coolingRate) {
         System.out.println("initial opt" + initialOptimizationFactor);
 
         float tCur = tMax; //tCur is the current temperature at a given step
-
         float currentOptimizationFactor = initialOptimizationFactor;
         float lastAcceptedOpti = initialOptimizationFactor;
         ArrayList<?> lastAcceptedSolution = new ArrayList<>(); // we have to save the old solution if we dont pick any in the if statements since .execute() always produces a new solution.
@@ -32,10 +29,8 @@ public class SimulatedAnnealing {
             delta = currentOptimizationFactor - a1.optimizationFactor;
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
-
                 a1.solution = currentSolution;                       //Choose the next solution as the current solution.
                 a1.optimizationFactor = currentOptimizationFactor;
-                //System.out.println("picked good");
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
 
@@ -43,7 +38,6 @@ public class SimulatedAnnealing {
                 lastAcceptedOpti = currentOptimizationFactor;
                 //TODO analyse the exponential seems very high
             } else if ( Math.exp((-delta)/tCur) > Math.random())  {
-
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
                 lastAcceptedSolution = currentSolution; //Choose the next solution as the current solution.
@@ -56,7 +50,6 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
 
             if (tCur < 1){
-
                 tCur += 5000;
             }
 

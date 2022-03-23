@@ -49,6 +49,7 @@ class TempVertex {
     int weight;
     int id;
     int maxDepth = -1;
+    TempVertex previousVertex;
     ArrayList<TempVertex> neighbors = new ArrayList<>();
 
     public TempVertex(int weight, int id){
@@ -58,6 +59,10 @@ class TempVertex {
 
     public void addNeighbor(TempVertex v) {
         neighbors.add(v);
+    }
+
+    public void setPreviousVertex(TempVertex previousVertex) {
+        this.previousVertex = previousVertex;
     }
 
     public void setMaxDepth(int dist) {
@@ -78,8 +83,15 @@ class TempVertex {
                 "weight=" + weight +
                 ", id=" + id +
                 ", neighbors=" + getNeighbors() +
+                " prev =" + printPrev() +
                 "dist=" + maxDepth +
                 "}\n";
+    }
+
+    public String printPrev(){
+        if(previousVertex != null) {
+            return String.valueOf(previousVertex.id) + " ";
+        } return "No prev ";
     }
 }
 

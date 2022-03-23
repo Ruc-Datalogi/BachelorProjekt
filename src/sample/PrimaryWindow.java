@@ -44,7 +44,7 @@ public class PrimaryWindow {
         debugTextField.setMaxWidth(TEXTAREA_WIDTH);
         debugTextField.setWrapText(true);
         debugTextField.setEditable(true);
-        debugTextField.setDisable(true);
+        debugTextField.setDisable(false);
         Button showPlot = new Button("Show Plot");
         showPlot.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         showPlot.setOnAction(a -> {
@@ -82,26 +82,35 @@ public class PrimaryWindow {
                 State.getState().modules
                 );
 
-        SequencePairs testSeq2 = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,3,2,5)) , new ArrayList<Integer>(Arrays.asList(2,3,5,5,1,4)), new ArrayList<Module>(Arrays.asList(
+        SequencePairs testSeq2 = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,8,3,6,2,10,5,7,9)) , new ArrayList<Integer>(Arrays.asList(2,7,3,5,9,8,1,4,6,10)), new ArrayList<Module>(Arrays.asList(
                 new Module(1,2,4),
                 new Module(2, 1,3),
                 new Module(3,2,2),
                 new Module(4,3,4),
-                new Module(5,2,1)
+                new Module(5,2,1),
+                new Module(6,4,4),
+                new Module(7, 2,1),
+                new Module(8,2,3),
+                new Module(9, 4,1),
+                new Module(10, 2,3)
         )));
+
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
         testSeq.calculatePlacementTable();
         testSeq2.calculatePlacementTable();
-        painter.drawBoxesInBin(testSeq2.testBin);
 
-        /*
+        //testSeq2.calculatePlacementTable();
+        //painter.drawBoxesInBin(testSeq2.testBin);
+
+
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.9f);
+        sa.simulatedAnnealing(testSeq2, 20000000,1f,testSeq2.optimizationFactor,0.99f);
         System.out.println(sa.finalSolution);
-        painter.drawBoxesInBin(testSeq.testBin);
+        painter.drawBoxesInBin(testSeq2.testBin);
+        System.out.println(testSeq.worstIdHorizontal + " " + testSeq.worstIdVertical);
         painter.drawGraph(null,null);
-         */
+
 
         mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.ESCAPE) {

@@ -12,7 +12,7 @@ public class PythonPlotter {
         public void runPython(String xCor, String yCor) {
             String[] cmd = {
                     "python",
-                    ".\\src\\sample\\script_python.py",
+                    ".\\src\\sample\\graph_python.py",
                     xCor,
                     yCor
             };

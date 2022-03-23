@@ -19,7 +19,7 @@ def input(x , y):
     fig, ax = plt.subplots()
     ax.scatter(x, y)
     plt.xlabel("Iterations")
-    plt.ylabel("Energy")
+    plt.ylabel("Area")
     plt.show()
 
 input(Convert(arg1), Convert(arg2))
