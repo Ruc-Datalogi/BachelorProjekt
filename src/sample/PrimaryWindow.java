@@ -51,6 +51,8 @@ public class PrimaryWindow {
             plotPython();
         });
         Button calculate = new Button("Calculate");
+        Button recalculate = new Button("Recalculate");
+        recalculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
             painter.fillBlank();
@@ -70,6 +72,7 @@ public class PrimaryWindow {
                 }
             }
         });
+
         //Test
         Bin2D testBin = new Bin2D(500,500);
         testBin.addBox(new Box2D(0,0,20,20));
@@ -105,12 +108,25 @@ public class PrimaryWindow {
 
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq2, 20000000,1f,testSeq2.optimizationFactor,0.99f);
+        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.99f);
         System.out.println(sa.finalSolution);
-        painter.drawBoxesInBin(testSeq2.testBin);
+        painter.drawBoxesInBin(testSeq.testBin);
         System.out.println(testSeq.worstIdHorizontal + " " + testSeq.worstIdVertical);
         painter.drawGraph(null,null);
 
+
+        recalculate.setOnAction((e) -> {
+            SequencePairs testSeqTemp = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
+                    CommonFunctions.randomIntegerList(State.getState().modules.size()),
+                    State.getState().modules
+            );
+            testSeqTemp.calculatePlacementTable();
+            SimulatedAnnealing sa2 = new SimulatedAnnealing();
+            sa2.simulatedAnnealing(testSeqTemp, 2000000,1f,testSeqTemp.optimizationFactor,0.99f);
+            System.out.println(sa2.finalSolution);
+            painter.drawBoxesInBin(testSeqTemp.testBin);
+            painter.drawGraph(null,null);
+        });
 
         mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.ESCAPE) {
@@ -139,7 +155,7 @@ public class PrimaryWindow {
         HBox mainHBox = new HBox();
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, calculate, showPlot);
+        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, recalculate, showPlot);
         mainHBox.setSpacing(8);
         mainHBox.setAlignment(Pos.CENTER);
         mainHBox.getChildren().addAll(mainCanvas, debugTextField);
@@ -162,7 +178,7 @@ public class PrimaryWindow {
     private static void plotPython(){
         if(State.getState().iterList != null ) {
             PythonPlotter scriptPython = new PythonPlotter();
-            scriptPython.runPython("", "");
+            scriptPython.runPython(State.getState().iterList, State.getState().energyList);
         }
     }
 

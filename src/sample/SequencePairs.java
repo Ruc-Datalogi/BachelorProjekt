@@ -6,13 +6,14 @@ public class SequencePairs extends Algorithm {
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
+    boolean rotate = false;
     int worstIdHorizontal;
     int worstIdVertical;
-    Bin2D testBin;
     int iterationsSinceBest = 0;
+    int bestDist = Integer.MAX_VALUE;
     float bestOptimazitionFactor;
     public Bin2D bestBin = new Bin2D();
-    public int bestDist = Integer.MAX_VALUE;
+    Bin2D testBin;
 
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positive = positive;
@@ -21,12 +22,30 @@ public class SequencePairs extends Algorithm {
     }
 
     public void calculatePlacementTable(){
+        Random r = new Random();
+        int id = r.nextInt(modules.size() - 1);
         for(Module mod : modules){
             //TODO remove index of
 
-            if(mod.id == worstIdHorizontal) {
+            /*
+            if(r.nextBoolean()) {
+                if(mod.id == worstIdHorizontal) {
+                    rotate = false;
+                    mod.rotate();
+                }
+            } else {
+                if(mod.id == worstIdVertical) {
+                    rotate = false;
+                    mod.rotate();
+                }
+            }
+            */
+            if(rotate && mod.id == worstIdHorizontal){
+                rotate = false;
                 mod.rotate();
             }
+
+
 
             int posiPosition = positive.indexOf(mod.id);
             mod.setPositiveIndex(posiPosition);
@@ -193,61 +212,48 @@ public class SequencePairs extends Algorithm {
     @Override
     void execute() {
         this.calculatePlacementTable(); //clean the table
-        int rng;
+        int swap1;
         Random random = new Random();
         if(random.nextBoolean()) {
-            rng = worstIdHorizontal;
+            swap1 = worstIdHorizontal;
         } else {
-            rng = worstIdVertical;
+            swap1 = worstIdVertical;
         }
-        //int rng = random.nextInt(positive.size());
-        int rng2 = random.nextInt(positive.size());
 
-        int idP = positive.get(rng - 1);
-        int idP2 = positive.get(rng2);
+        //int rng = random.nextInt(positive.size());
+        int swap2  = random.nextInt(positive.size());
+
+        int idP = positive.get(swap1 - 1);
+        int idP2 = positive.get(swap2);
 
 
         if(bestOptimazitionFactor < super.optimizationFactor){
             iterationsSinceBest = 0;
         }
 
-        //Swap 1
-        if(iterationsSinceBest < 25) {
-            Collections.swap(positive,rng - 1 ,rng2);
-            Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
-        } else {
-            //Single swap
-            iterationsSinceBest = 0;
-            rng = random.nextInt(positive.size());
-            rng2 = random.nextInt(positive.size());
-            if(random.nextBoolean()) {
-                Collections.swap(positive,rng - 1,rng2);
-            } else {
-                Collections.swap(negative,rng - 1,rng2);
-            }
+        switch (random.nextInt(0,4)) {
+            case 0: // Dual swap
+                Collections.swap(positive,swap1 - 1 ,swap2);
+                Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
+            case 1: // Single Swap Positive
+                Collections.swap(positive,swap1 - 1,swap2);
+            case 2: // Single Swap Negative
+                Collections.swap(negative,swap1 - 1,swap2);
+            case 3: // Slicing swap Positive
+                ArrayList<Integer> subList1 = new ArrayList<>(positive.subList(0, positive.indexOf(swap1)));
+                ArrayList<Integer> subList2 = new ArrayList<>(positive.subList(positive.indexOf(swap1) + 1, positive.size()));
+                subList2.add(positive.get(positive.indexOf(swap1)));
+                subList1.addAll(subList2);
+                positive = subList1;
+            case 4: // Slicing swap Positive
+                ArrayList<Integer> subLists1 = new ArrayList<>(negative.subList(0, negative.indexOf(swap1)));
+                ArrayList<Integer> subLists2 = new ArrayList<>(negative.subList(negative.indexOf(swap1) + 1, negative.size()));
+                subLists2.add(negative.get(negative.indexOf(swap1)));
+                subLists1.addAll(subLists2);
+                negative = subLists1;
+            case 5: // Rotate
+                rotate = true;
         }
-        if (random.nextBoolean()) {
-            ArrayList<Integer> subList1 = new ArrayList<>(positive.subList(0, positive.indexOf(rng)));
-            ArrayList<Integer> subList2 = new ArrayList<>(positive.subList(positive.indexOf(rng) + 1, positive.size()));
-            subList2.add(positive.get(positive.indexOf(rng)));
-            subList1.addAll(subList2);
-            positive = subList1;
-        } else {
-            ArrayList<Integer> subList1 = new ArrayList<>(negative.subList(0, negative.indexOf(rng)));
-            ArrayList<Integer> subList2 = new ArrayList<>(negative.subList(negative.indexOf(rng) + 1, negative.size()));
-            subList2.add(negative.get(negative.indexOf(rng)));
-            subList1.addAll(subList2);
-            negative = subList1;
-        }
-
-        /*
-        else {
-            //Single swap
-            rng = random.nextInt(positive.size());
-            rng2 = random.nextInt(positive.size());
-            Collections.swap(negative,rng,rng2);
-        }
-        */
 
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positive);
@@ -288,10 +294,12 @@ class Module implements Comparable<Module>{
         this.width = width;
         this.height = height;
     }
+
     int getPositiveIndex(){
         return positiveIndex;
 
     }
+
     int getNegativeIndex(){
         return negativeIndex;
     }
@@ -319,4 +327,5 @@ class Module implements Comparable<Module>{
         }
         return 0;
     }
+
 }
