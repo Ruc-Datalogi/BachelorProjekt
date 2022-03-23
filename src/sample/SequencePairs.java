@@ -100,13 +100,13 @@ public class SequencePairs extends Algorithm {
             bestOptimazitionFactor = dist2*dist;
         }
 
-        PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
 
         if (optimizationFactor < bestDist) {
             //testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
             testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
             bestBin = testBin;
             bestDist = (int) optimizationFactor;
+            PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
 
     }
