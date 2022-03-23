@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class PrimaryWindow {
     static TextArea debugTextField = new TextArea();
 
 
-    public static BorderPane createMainWindow(){
+    public static BorderPane createMainWindow() throws IOException {
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
         Canvas mainCanvas = new Canvas(CANVAS_WIDTH,CANVAS_HEIGHT);
@@ -63,7 +64,11 @@ public class PrimaryWindow {
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), algoSolution1D.get(i));
                 }
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.000001f, algoSolution1D.size(),0.99999f);
+                try {
+                    simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.000001f, algoSolution1D.size(),0.999999f);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
@@ -105,9 +110,9 @@ public class PrimaryWindow {
 
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq2, 20000000,1f,testSeq2.optimizationFactor,0.99f);
+        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.999f);
         System.out.println(sa.finalSolution);
-        painter.drawBoxesInBin(testSeq2.testBin);
+        painter.drawBoxesInBin(testSeq.testBin);
         System.out.println(testSeq.worstIdHorizontal + " " + testSeq.worstIdVertical);
         painter.drawGraph(null,null);
 
@@ -162,7 +167,7 @@ public class PrimaryWindow {
     private static void plotPython(){
         if(State.getState().iterList != null ) {
             PythonPlotter scriptPython = new PythonPlotter();
-            scriptPython.runPython(State.getState().iterList, State.getState().energyList);
+            scriptPython.runPython("","");
         }
     }
 
