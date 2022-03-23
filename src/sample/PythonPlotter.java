@@ -14,7 +14,7 @@ public class PythonPlotter {
 
             String[] cmd = {
                     "python",
-                    ".\\src\\sample\\graph_python.py",
+                    ".\\src\\sample\\script_python.py",
                     xCor,
                     yCor
             };
