@@ -23,7 +23,7 @@ public class SequencePairs extends Algorithm {
 
     public void calculatePlacementTable(){
         Random r = new Random();
-        int id = r.nextInt(modules.size() - 1);
+
         for(Module mod : modules){
             //TODO remove index of
 
@@ -40,7 +40,7 @@ public class SequencePairs extends Algorithm {
                 }
             }
             */
-            if(rotate && mod.id == worstIdHorizontal){
+            if(mod.id == worstIdHorizontal){
                 rotate = false;
                 mod.rotate();
             }
@@ -99,7 +99,6 @@ public class SequencePairs extends Algorithm {
         if (dist2*dist < super.optimizationFactor){
             bestOptimazitionFactor = dist2*dist;
         }
-
 
         if (optimizationFactor < bestDist) {
             //testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
@@ -231,7 +230,7 @@ public class SequencePairs extends Algorithm {
             iterationsSinceBest = 0;
         }
 
-        switch (random.nextInt(0,4)) {
+        switch (random.nextInt(0,3)) {
             case 0: // Dual swap
                 Collections.swap(positive,swap1 - 1 ,swap2);
                 Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));

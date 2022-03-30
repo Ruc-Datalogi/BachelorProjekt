@@ -50,7 +50,6 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
 
             if (tCur < 1){
-                System.out.println("re heat");
                 tCur += tMax;
             }
 
