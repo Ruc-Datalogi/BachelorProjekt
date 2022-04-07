@@ -65,7 +65,7 @@ public class PrimaryWindow {
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), algoSolution1D.get(i));
                 }
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.000001f, algoSolution1D.size(),0.99999f);
+                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.1f, algoSolution1D.size(),0.9f);
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
@@ -98,6 +98,19 @@ public class PrimaryWindow {
                 new Module(10, 2,3)
         )));
 
+        DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(1,4,8,3,6,2,10,5,7,9)) , new ArrayList<Integer>(Arrays.asList(2,7,3,5,9,8,1,4,6,10)), new ArrayList<Module>(Arrays.asList(
+                new Module(1,2,4),
+                new Module(2, 1,3),
+                new Module(3,2,2),
+                new Module(4,3,4),
+                new Module(5,2,1),
+                new Module(6,4,4),
+                new Module(7, 2,1),
+                new Module(8,2,3),
+                new Module(9, 4,1),
+                new Module(10, 2,3))));
+        divideAndConquer.calculatePlacement();
+
         //newSeqTest.calculatePlacementTable();
         //painter.drawBoxesInBin(newSeqTest.testBin);
         testSeq.calculatePlacementTable();
@@ -108,26 +121,12 @@ public class PrimaryWindow {
 
 
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.99f);
+        sa.simulatedAnnealing(testSeq, 2,1f,testSeq.optimizationFactor,0.1f);
         System.out.println(sa.finalSolution);
         painter.drawBoxesInBin(testSeq.testBin);
-        System.out.println(testSeq.worstIdHorizontal + " " + testSeq.worstIdVertical);
+        System.out.println(testSeq2.worstIdHorizontal + " " + testSeq2.worstIdVertical);
         painter.drawGraph(null,null);
-
-
-        recalculate.setOnAction((e) -> {
-            SequencePairs testSeqTemp = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
-                    CommonFunctions.randomIntegerList(State.getState().modules.size()),
-                    State.getState().modules
-            );
-            testSeqTemp.calculatePlacementTable();
-            SimulatedAnnealing sa2 = new SimulatedAnnealing();
-            sa2.simulatedAnnealing(testSeqTemp, 2000000,1f,testSeqTemp.optimizationFactor,0.99f);
-            System.out.println(sa2.finalSolution);
-            painter.drawBoxesInBin(testSeqTemp.testBin);
-            painter.drawGraph(null,null);
-        });
-
+        System.out.println(testSeq.solutionSet.size());
         mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 System.exit(1);
