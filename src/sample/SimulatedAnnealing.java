@@ -50,10 +50,10 @@ public class SimulatedAnnealing {
             //System.out.println("Temp after step: " + tCur);
 
             if (tCur < 1){
-                tCur += tMax;
+                tCur += tMax/2;
             }
 
-            if(i > 25000) break;
+            if(i > 50000) break;
         }
 
 
