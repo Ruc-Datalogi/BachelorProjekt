@@ -1,6 +1,5 @@
 package sample;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class SimulatedAnnealing {
@@ -9,50 +8,52 @@ public class SimulatedAnnealing {
     ArrayList<Integer> iterList = new ArrayList<>();
     float delta;
 
-    <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float initialOptimizationFactor, float coolingRate) throws IOException {
+    <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float initialOptimizationFactor, float coolingRate) {
         System.out.println("initial opt" + initialOptimizationFactor);
 
         float tCur = tMax; //tCur is the current temperature at a given step
-        float currentOptimizationFactor;
+        float currentOptimizationFactor = initialOptimizationFactor;
+        float lastAcceptedOpti = initialOptimizationFactor;
+        ArrayList<?> lastAcceptedSolution = new ArrayList<>(); // we have to save the old solution if we dont pick any in the if statements since .execute() always produces a new solution.
 
         int i = 0;
-        a1.execute();
 
         while (tCur > tMin){
             i++;
             currentOptimizationFactor = a1.optimizationFactor;
-            ArrayList<Object> currentSolution = new ArrayList<>(a1.solution);
+            a1.solution = lastAcceptedSolution;
+            a1.optimizationFactor = lastAcceptedOpti;
             a1.execute();
+            ArrayList<Object> currentSolution = new ArrayList<>(a1.solution);
 
-            delta = a1.optimizationFactor -  currentOptimizationFactor ;
+            delta = currentOptimizationFactor - a1.optimizationFactor;
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize
+                a1.solution = currentSolution;                       //Choose the next solution as the current solution.
+                a1.optimizationFactor = currentOptimizationFactor;
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
 
+                lastAcceptedSolution = a1.solution;
+                lastAcceptedOpti = currentOptimizationFactor;
+                //TODO analyse the exponential seems very high
             } else if ( Math.exp((-delta)/tCur) > Math.random())  {
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
-                a1.optimizationFactor = currentOptimizationFactor;
-
-
-            } else { //if we dont pick a new solution in the delta block, and the temp block, we need to set the algorithms solution set to the old solution.
-                a1.solution = currentSolution;
+                lastAcceptedSolution = currentSolution; //Choose the next solution as the current solution.
+                lastAcceptedOpti = a1.optimizationFactor;
                 a1.optimizationFactor = currentOptimizationFactor;
             }
-
-
 
             tCur *= coolingRate;
             //System.out.printf(String.valueOf(a1.solution));
             //System.out.println("Temp after step: " + tCur);
 
-
             if (tCur < 1){
-                tCur = 200000;
+                tCur += tMax;
             }
-            System.out.println(i);
-            if(i > 200000) break;
+
+            if(i > 25000) break;
         }
 
 
@@ -72,7 +73,6 @@ public class SimulatedAnnealing {
 
         State.getState().iterList = tempIterList.toString();
         State.getState().energyList = tempEnergyList.toString();
-        CSVWriter.getCsvWriter().writeLists(iterList,energyList);
         finalSolution = a1.solution;
     }
 }

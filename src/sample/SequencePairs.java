@@ -3,9 +3,11 @@ package sample;
 import java.util.*;
 
 public class SequencePairs extends Algorithm {
-    ArrayList<Integer> positive = new ArrayList<>();
+    ArrayList<Integer> positiveSequence = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
     ArrayList<Module> modules = new ArrayList<>();
+    HashMap<Integer, Integer> mapPostive = new HashMap<>();
+    HashMap<Integer, Integer> mapNegative = new HashMap<>();
     boolean rotate = false;
     int worstIdHorizontal;
     int worstIdVertical;
@@ -14,16 +16,24 @@ public class SequencePairs extends Algorithm {
     float bestOptimazitionFactor;
     public Bin2D bestBin = new Bin2D();
     Bin2D testBin;
+    HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
 
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
-        this.positive = positive;
+        this.positiveSequence = positive;
         this.negative = negative;
         this.modules = modules;
+        for(int i = 0 ; i < positive.size() ; i++) {
+            mapPostive.put(positive.get(i), i);
+        }
+        for(int i = 0 ; i < negative.size() ; i++) {
+            mapNegative.put(negative.get(i), i);
+        }
     }
 
+
+
     public void calculatePlacementTable(){
-        Random r = new Random();
-        int id = r.nextInt(modules.size() - 1);
+
         for(Module mod : modules){
             //TODO remove index of
 
@@ -40,20 +50,18 @@ public class SequencePairs extends Algorithm {
                 }
             }
             */
-            if(rotate && mod.id == worstIdHorizontal){
+            if(mod.id == worstIdHorizontal){
                 rotate = false;
                 mod.rotate();
             }
 
-
-
-            int posiPosition = positive.indexOf(mod.id);
+            int posiPosition = mapPostive.get(mod.id);
             mod.setPositiveIndex(posiPosition);
-            int negiPositon = negative.indexOf(mod.id);
+            int negiPositon = mapNegative.get(mod.id);
             mod.setNegativeIndex(negiPositon);
 
-            List<Integer> leftPosSlice   = positive.subList(0, posiPosition);
-            List<Integer> rightPosSlice  = positive.subList(posiPosition+1, positive.size() );
+            List<Integer> leftPosSlice   = positiveSequence.subList(0, posiPosition);
+            List<Integer> rightPosSlice  = positiveSequence.subList(posiPosition+1, positiveSequence.size() );
             List<Integer> leftNegiSlice  = negative.subList(0, negiPositon);
             List<Integer> rightNegiSlice = negative.subList(negiPositon+1, negative.size() );
 
@@ -100,15 +108,13 @@ public class SequencePairs extends Algorithm {
             bestOptimazitionFactor = dist2*dist;
         }
 
-        PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
-
         if (optimizationFactor < bestDist) {
             //testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
             testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
             bestBin = testBin;
             bestDist = (int) optimizationFactor;
+            PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
-
     }
 
 
@@ -198,6 +204,12 @@ public class SequencePairs extends Algorithm {
         return DFSTargetExplore(input, target, 0,0);
     }
 
+    private void swapInMap(HashMap<Integer, Integer> map, int id1 , int id2) {
+        Integer tempValue = map.get(id1);
+        map.put(id1, map.get(id2));
+        map.put(id2, tempValue);
+    }
+
     private int DFSTargetExplore(Vertex input, Vertex target, int depth, int maxDepth){
         if(input.id == target.id) return maxDepth;
         for(Vertex v: input.neighbors) {
@@ -211,34 +223,44 @@ public class SequencePairs extends Algorithm {
 
     @Override
     void execute() {
-        this.calculatePlacementTable(); //clean the table
-        int swap1;
+
+        //int swap1;
         Random random = new Random();
-        if(random.nextBoolean()) {
-            swap1 = worstIdHorizontal;
+        /*
+        if (random.nextBoolean()) {
+            swap1 = worstIdHorizontal - 1;
         } else {
-            swap1 = worstIdVertical;
+            swap1 = worstIdVertical - 1;
         }
+        */
+        int randomIndex1 = random.nextInt(positiveSequence.size());
+        int randomIndex2  = random.nextInt(positiveSequence.size());
 
-        //int rng = random.nextInt(positive.size());
-        int swap2  = random.nextInt(positive.size());
-
-        int idP = positive.get(swap1 - 1);
-        int idP2 = positive.get(swap2);
-
+        int id1 = positiveSequence.get(randomIndex1);
+        int id2 = positiveSequence.get(randomIndex2);
 
         if(bestOptimazitionFactor < super.optimizationFactor){
             iterationsSinceBest = 0;
         }
 
-        switch (random.nextInt(0,4)) {
+
+        switch (random.nextInt(0,2)) {
             case 0: // Dual swap
-                Collections.swap(positive,swap1 - 1 ,swap2);
-                Collections.swap(negative,negative.indexOf(idP),negative.indexOf(idP2));
+                Collections.swap(positiveSequence,randomIndex1,randomIndex2);
+                swapInMap(mapPostive, id1, id2);
+                Collections.swap(negative,mapNegative.get(id1), mapNegative.get(id2));
+                swapInMap(mapNegative, id1, id2);
+                break;
             case 1: // Single Swap Positive
-                Collections.swap(positive,swap1 - 1,swap2);
+                Collections.swap(positiveSequence,randomIndex1,randomIndex2);
+                swapInMap(mapPostive, id1, id2);
+                break;
             case 2: // Single Swap Negative
-                Collections.swap(negative,swap1 - 1,swap2);
+                System.out.println("ih");
+                Collections.swap(negative,randomIndex1,randomIndex2);
+                swapInMap(mapNegative, id1, id2);
+                break;
+                /*
             case 3: // Slicing swap Positive
                 ArrayList<Integer> subList1 = new ArrayList<>(positive.subList(0, positive.indexOf(swap1)));
                 ArrayList<Integer> subList2 = new ArrayList<>(positive.subList(positive.indexOf(swap1) + 1, positive.size()));
@@ -251,16 +273,20 @@ public class SequencePairs extends Algorithm {
                 subLists2.add(negative.get(negative.indexOf(swap1)));
                 subLists1.addAll(subLists2);
                 negative = subLists1;
+                */
             case 5: // Rotate
                 rotate = true;
+                break;
         }
-
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
-        solutions.add(positive);
+        solutions.add(positiveSequence);
         solutions.add(negative);
-
         this.solution = solutions;
         iterationsSinceBest++;
+
+        if (solutionSet.add(solutions)) {
+            this.calculatePlacementTable(); // clean the table //TODO figure out if it needs to be earlier
+        }
     }
 }
 
