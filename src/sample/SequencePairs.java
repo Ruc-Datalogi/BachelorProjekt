@@ -35,8 +35,6 @@ public class SequencePairs extends Algorithm {
     public void calculatePlacementTable(){
 
         for(Module mod : modules){
-            //TODO remove index of
-
             /*
             if(r.nextBoolean()) {
                 if(mod.id == worstIdHorizontal) {
@@ -109,7 +107,6 @@ public class SequencePairs extends Algorithm {
         }
 
         if (optimizationFactor < bestDist) {
-            //testBin=generateCoordinatesForModules(hcg,vcg,dist,dist2);
             testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
             bestBin = testBin;
             bestDist = (int) optimizationFactor;
