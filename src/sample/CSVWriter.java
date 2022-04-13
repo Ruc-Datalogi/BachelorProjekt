@@ -2,6 +2,7 @@ package sample;
 
 import java.io.*;
 import java.nio.Buffer;
+import java.util.ArrayList;
 
 public class CSVWriter {
 
@@ -19,6 +20,15 @@ public class CSVWriter {
 
     public void close () throws IOException {
 
+        writer.close();
+    }
+
+    public void writeLists(ArrayList a1, ArrayList a2) throws IOException {
+        System.out.println(a1.size());
+        for (int i = 0; i < a1.size(); i++) {
+            writer.write(a1.get(i) + "," + a2.get(i));
+            writer.newLine();
+        }
         writer.close();
     }
 
