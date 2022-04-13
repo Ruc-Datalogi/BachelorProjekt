@@ -11,7 +11,6 @@ public class CSVWriter {
 
     }
 
-
     static private CSVWriter csvWriter;
 
     public static CSVWriter getCsvWriter() throws IOException {
