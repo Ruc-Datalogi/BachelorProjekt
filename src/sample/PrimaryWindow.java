@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,7 +25,7 @@ public class PrimaryWindow {
     final static double TEXTAREA_WIDTH = 360.0;
     static TextArea debugTextField = new TextArea();
 
-    public static BorderPane createMainWindow(){
+    public static BorderPane createMainWindow() throws IOException {
         BorderPane mainBorderPane = new BorderPane();
         BorderPane topBorderPane = new BorderPane();
         Canvas mainCanvas = new Canvas(CANVAS_WIDTH,CANVAS_HEIGHT);
@@ -59,7 +60,11 @@ public class PrimaryWindow {
                     painter.drawBox1D((40*(i%14) +16), 50+50*(Math.floorDiv(i,14)), algoSolution1D.get(i));
                 }
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.1f, algoSolution1D.size(),0.9f);
+                try {
+                    simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.1f, algoSolution1D.size(),0.9f);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 for(int i = 0 ; i < simulatedAnnealing.finalSolution.size() ; i++ ) {
                     painter.drawBox1D((40*(i%14) +16), 300+50*(Math.floorDiv(i,14)), (Bin1D) simulatedAnnealing.finalSolution.get(i));
