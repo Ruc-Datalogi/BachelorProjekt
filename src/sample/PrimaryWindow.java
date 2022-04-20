@@ -11,10 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PrimaryWindow {
@@ -26,7 +23,6 @@ public class PrimaryWindow {
     final static double CANVAS_WIDTH = 1100.0;
     final static double TEXTAREA_WIDTH = 360.0;
     static TextArea debugTextField = new TextArea();
-
 
     public static BorderPane createMainWindow(){
         BorderPane mainBorderPane = new BorderPane();
@@ -51,8 +47,6 @@ public class PrimaryWindow {
             plotPython();
         });
         Button calculate = new Button("Calculate");
-        Button recalculate = new Button("Recalculate");
-        recalculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
         calculate.setOnAction((e) -> {
             painter.fillBlank();
@@ -72,89 +66,29 @@ public class PrimaryWindow {
                 }
             }
         });
-
-        //Test
-        Bin2D testBin = new Bin2D(500,500);
-        testBin.addBox(new Box2D(0,0,20,20));
-        testBin.addBox(new Box2D(20,0,30,30));
-        testBin.addBox(new Box2D(0,30,40,40));
-        //painter.drawBoxesInBin(testBin);
-        //painter.drawBox2D(100,100,200,200);
+        GenerateRectangleDataSet generateRectangleDataSet = new GenerateRectangleDataSet(200,200);
+        SequencePairs testSeq = generateRectangleDataSet.generateSeq();
+        /*
         SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
-                State.getState().modules
-                );
-
-        SequencePairs testSeq2 = new SequencePairs(new ArrayList<Integer>(Arrays.asList(1,4,8,3,6,2,10,5,7,9)) , new ArrayList<Integer>(Arrays.asList(2,7,3,5,9,8,1,4,6,10)), new ArrayList<Module>(Arrays.asList(
-                new Module(1,2,4),
-                new Module(2, 1,3),
-                new Module(3,2,2),
-                new Module(4,3,4),
-                new Module(5,2,1),
-                new Module(6,4,4),
-                new Module(7, 2,1),
-                new Module(8,2,3),
-                new Module(9, 4,1),
-                new Module(10, 2,3)
-        )));
-
-        DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(1,4,8,3,6,2,10,5,7,9)) , new ArrayList<Integer>(Arrays.asList(2,7,3,5,9,8,1,4,6,10)), new ArrayList<Module>(Arrays.asList(
-                new Module(1,2,4),
-                new Module(2, 1,3),
-                new Module(3,2,2),
-                new Module(4,3,4),
-                new Module(5,2,1),
-                new Module(6,4,4),
-                new Module(7, 2,1),
-                new Module(8,2,3),
-                new Module(9, 4,1),
-                new Module(10, 2,3))));
-        divideAndConquer.calculatePlacement();
-
-        //newSeqTest.calculatePlacementTable();
-        //painter.drawBoxesInBin(newSeqTest.testBin);
+                State.getState().modules);
+        */
         testSeq.calculatePlacementTable();
-        testSeq2.calculatePlacementTable();
-
-        //testSeq2.calculatePlacementTable();
-        //painter.drawBoxesInBin(testSeq2.testBin);
-
-
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 2,1f,testSeq.optimizationFactor,0.1f);
-        System.out.println(sa.finalSolution);
+        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.99f);
         painter.drawBoxesInBin(testSeq.testBin);
-        System.out.println(testSeq2.worstIdHorizontal + " " + testSeq2.worstIdVertical);
-        painter.drawGraph(null,null);
-        System.out.println(testSeq.solutionSet.size());
-        mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
-            if (e.getCode() == KeyCode.ESCAPE) {
-                System.exit(1);
-            }
-            e.consume();
-        });
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
-        comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
-        comboBoxAlgorithms.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(Dimension.ONEDIMENSION)));
-        comboBoxAlgorithms.getSelectionModel().selectFirst();
-        comboBoxAlgorithms.setOnAction((e) -> {
-            changeAlgorithmState(comboBoxAlgorithms.getSelectionModel().getSelectedItem());
-        });
+        setComboboxAlgorithms(comboBoxAlgorithms);
 
         ComboBox<Dimension> comboBoxDimensions = new ComboBox();
-        comboBoxDimensions.setItems(FXCollections.observableArrayList(Dimension.values()));
-        comboBoxDimensions.getSelectionModel().selectFirst();
-        comboBoxDimensions.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
-        comboBoxDimensions.setOnAction((e) -> {
-            changeDimensionState(comboBoxDimensions.getSelectionModel().getSelectedItem(), comboBoxAlgorithms);
-        });
+        setComboBox(comboBoxAlgorithms, comboBoxDimensions);
 
         HBox hBox = new HBox();
         HBox mainHBox = new HBox();
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, recalculate, showPlot);
+        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, showPlot);
         mainHBox.setSpacing(8);
         mainHBox.setAlignment(Pos.CENTER);
         mainHBox.getChildren().addAll(mainCanvas, debugTextField);
@@ -162,10 +96,33 @@ public class PrimaryWindow {
         BorderPane.setMargin(title, new Insets(16));
         topBorderPane.setCenter(hBox);
         topBorderPane.setTop(title);
-
         mainBorderPane.setTop(topBorderPane);
         mainBorderPane.setCenter(mainHBox);
+        mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                System.exit(1);
+            }
+            e.consume();
+        });
         return mainBorderPane;
+    }
+
+    private static void setComboboxAlgorithms(ComboBox<Algorithms> comboBoxAlgorithms) {
+        comboBoxAlgorithms.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
+        comboBoxAlgorithms.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(Dimension.ONEDIMENSION)));
+        comboBoxAlgorithms.getSelectionModel().selectFirst();
+        comboBoxAlgorithms.setOnAction((e) -> {
+            changeAlgorithmState(comboBoxAlgorithms.getSelectionModel().getSelectedItem());
+        });
+    }
+
+    private static void setComboBox(ComboBox<Algorithms> comboBoxAlgorithms, ComboBox<Dimension> comboBoxDimensions) {
+        comboBoxDimensions.setItems(FXCollections.observableArrayList(Dimension.values()));
+        comboBoxDimensions.getSelectionModel().selectFirst();
+        comboBoxDimensions.setPrefSize(BUTTON_WIDTH*1.4, BUTTON_HEIGHT);
+        comboBoxDimensions.setOnAction((e) -> {
+            changeDimensionState(comboBoxDimensions.getSelectionModel().getSelectedItem(), comboBoxAlgorithms);
+        });
     }
 
     private static void changeDimensionState (Dimension d, ComboBox c) {
