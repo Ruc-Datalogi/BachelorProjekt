@@ -19,10 +19,25 @@ public class CSVWriter {
     }
 
     public void close () throws IOException {
-
         writer.close();
     }
 
+
+    public void createAndWrite(String directory, String fileName, String csv) throws IOException {
+        File outputFile = new File(directory + fileName);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile.getAbsolutePath()));
+
+        csv.lines().forEach(n -> {
+            try {
+                writer.write(n);
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        writer.close();
+    }
     public void writeLists(ArrayList a1, ArrayList a2) throws IOException {
         System.out.println(a1.size());
         for (int i = 0; i < a1.size(); i++) {

@@ -21,15 +21,11 @@ class Vertex {
     private int distToTarget=-1;
     private int explorationIteration=0;
     Vertex previousVertex;
-    ArrayList<Vertex> neighbors = new ArrayList<>();
+    ArrayList<Vertex> neighbors = new ArrayList<>(); //TODO change structure?
 
     public Vertex(int weight, int id){
         this.weight = weight;
         this.id = id;
-    }
-
-    public void addNeighbor(Vertex v) {
-        neighbors.add(v);
     }
 
     public void setPreviousVertex(Vertex previousVertex) {

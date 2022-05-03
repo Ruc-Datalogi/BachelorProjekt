@@ -11,9 +11,16 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 public class PrimaryWindow {
 
@@ -24,6 +31,7 @@ public class PrimaryWindow {
     final static double CANVAS_WIDTH = 1100.0;
     final static double TEXTAREA_WIDTH = 360.0;
     static TextArea debugTextField = new TextArea();
+
 
     public static BorderPane createMainWindow() throws IOException {
         BorderPane mainBorderPane = new BorderPane();
@@ -61,7 +69,7 @@ public class PrimaryWindow {
                 }
                 SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
                 try {
-                    simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.1f, algoSolution1D.size(),0.9f);
+                    simulatedAnnealing.simulatedAnnealing(new TwoOpt(algoSolution1D),200,0.1f, algoSolution1D.size());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -71,6 +79,92 @@ public class PrimaryWindow {
                 }
             }
         });
+
+        ArrayList<String> line = new ArrayList<>();
+        File testSetFolder = new File("src/TestSet/");
+        int bestDist = Integer.MAX_VALUE;
+        int averageAmountRectangles = 0;
+        double STDRectangles = 0;
+        ArrayList<Integer> rectangles = new ArrayList<>();
+        ArrayList<Integer> everySolution = new ArrayList<>();
+        String testResult = """
+                optimal 40000
+                BoxAmount,Solution,startTemp,minTemp,coolRate
+                """;
+        for (File testSet : Objects.requireNonNull(testSetFolder.listFiles())) {
+            String s = testSet.getName();
+            String sa[] = s.split("_");
+            rectangles.add(Integer.valueOf(sa[2].replace(".csv","")));
+        }
+        int sum = 0;
+        for ( Integer i : rectangles) {
+            sum += i;
+        }
+        averageAmountRectangles = sum/rectangles.size();
+        STDRectangles = CommonFunctions.calculateSD(rectangles);
+
+        for (int j =  0 ; j < 10 ; j++ ) {
+            int startTemp = 2000000-j*5000;
+            float minTemp = 0.005f;
+            float coolingRate = 0.9994f;
+
+            int iterationsSA = 0;
+
+            for (File testSet : Objects.requireNonNull(testSetFolder.listFiles())) {
+
+                ArrayList<Simple2DBox> BoxArray = new ArrayList<>();
+
+                FileReader fileReader = new FileReader(testSet);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+                while (bufferedReader.ready()) {
+                    String s = bufferedReader.readLine();
+                    String[] split = s.split(",");
+
+                    BoxArray.add(new Simple2DBox(Integer.parseInt(split[0]),Integer.parseInt(split[1])));
+                }
+
+                ArrayList<Integer> positive = new ArrayList<>();
+                ArrayList<Integer> negative = new ArrayList<>();
+                ArrayList<Module> modules = new ArrayList<>();
+
+                for (int i = 0; i < BoxArray.size() ; i ++) {
+                    positive.add(i + 1);
+                    negative.add(i + 1);
+                    modules.add(new Module(i+1, BoxArray.get(i).w, BoxArray.get(i).h));
+                }
+
+                SequencePairs testSeq = new SequencePairs(positive, negative, modules);
+                SimulatedAnnealing sa = new SimulatedAnnealing();
+
+                testSeq.calculatePlacementTable();
+                sa.simulatedAnnealing(testSeq, startTemp, minTemp, coolingRate);
+                everySolution.add(testSeq.bestDist);
+
+                if (bestDist > testSeq.bestDist) {
+                    bestDist = testSeq.bestDist;
+                }
+                iterationsSA = sa.i;
+            }
+
+            //painter.drawBoxesInBin(drawSQ.testBin);
+            sum = 0;
+            for (Integer i: everySolution) {
+                sum += i;
+            }
+            int average = sum/everySolution.size();
+            double standardDeviation = CommonFunctions.calculateSD(everySolution);
+            testResult += iterationsSA + "," + average + "," + standardDeviation + "," + coolingRate + ","+ averageAmountRectangles +","+ STDRectangles +"\n";
+
+            System.out.println("average " + average + " standard "
+                    + standardDeviation + " best " + bestDist + " coolingrate " + coolingRate
+                    + " averageRect " + averageAmountRectangles + " stdRectangles  " + STDRectangles
+            );
+        }
+
+        CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test"+".csv", testResult);
+        //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "testResults.csv",testResult);
+
         GenerateRectangleDataSet generateRectangleDataSet = new GenerateRectangleDataSet(200,200);
         SequencePairs testSeq = generateRectangleDataSet.generateSeq();
         /*
@@ -80,7 +174,7 @@ public class PrimaryWindow {
         */
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.99f);
+        sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
         //painter.drawBoxesInBin(testSeq.testBin);
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
@@ -129,6 +223,8 @@ public class PrimaryWindow {
             changeDimensionState(comboBoxDimensions.getSelectionModel().getSelectedItem(), comboBoxAlgorithms);
         });
     }
+
+
 
     private static void changeDimensionState (Dimension d, ComboBox c) {
         c.setItems(FXCollections.observableArrayList(Algorithms.getAlgorithms(d)));
