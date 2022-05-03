@@ -94,21 +94,28 @@ public class SequencePairs extends Algorithm {
         thcg.vertices.add(targetH);
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
-
+        /*
         int dist = Math.abs(DFS(sourceH));
+        System.out.println("Thcg size:" + thcg.vertices.size());
+        System.out.println("Dist old DFS: " + dist + ". Dist new DFS: " + sourceH.DFS_Test());
+        System.exit(0);
         int dist2 = Math.abs(DFS(sourceV));
         worstIdHorizontal = worstRoute(targetH);
         worstIdVertical = worstRoute(targetV);
-        super.optimizationFactor = dist2*dist; // the variable we optimise for.
         worstRoute(targetH);
+        */
+        int dist = sourceH.DFS_Test();
+        int dist2 = sourceV.DFS_Test();
+        super.optimizationFactor = dist2*dist; // the variable we optimise for.
+
 
         if (dist2*dist < super.optimizationFactor){
             bestOptimazitionFactor = dist2*dist;
         }
 
         if (optimizationFactor < bestDist) {
-            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
-            bestBin = testBin;
+            //testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
+            //bestBin = testBin;
             bestDist = (int) optimizationFactor;
             PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
@@ -178,12 +185,16 @@ public class SequencePairs extends Algorithm {
         return bin;
     }
 
-
+    int DFSIt=0;
     private int DFS(Vertex input) {
-        return DFSExplore(input, 0, 0);
+        DFSIt=0;
+        int dfsDist=DFSExplore(input, 0, 0);
+        System.out.println("Old explore iterations: " + DFSIt);
+        return dfsDist;
     }
 
     private int DFSExplore(Vertex input, int depth, int maxDepth) {
+        DFSIt++;
         for(Vertex v : input.neighbors) {
             if (depth + v.weight > maxDepth) {
                 maxDepth = depth + v.weight;

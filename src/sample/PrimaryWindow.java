@@ -81,7 +81,7 @@ public class PrimaryWindow {
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,testSeq.optimizationFactor,0.99f);
-        painter.drawBoxesInBin(testSeq.testBin);
+        //painter.drawBoxesInBin(testSeq.testBin);
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
         setComboboxAlgorithms(comboBoxAlgorithms);
