@@ -42,13 +42,35 @@ class Vertex {
 
     public int DFS_Test() {
         int dist=DFSExplore_Test(this, 0, 0);
-        System.out.println("New explore iteration: " + explorationIteration);
+        //System.out.println("New explore iteration: " + explorationIteration);
         return dist;
 
     }
-    private int DFSExplore_Test(Vertex input, int depth, int maxDepth) {
+    public int DFS_New(){
+        DFS_ExploreNew(this);
+        return this.distToTarget;
+    }
+    private int DFS_ExploreNew(Vertex input){
+        int delta=0;
+        for(Vertex v: input.neighbors){
+            if(v.distToTarget>-1 && delta<v.distToTarget){ //If we have already calculated the distance from v to target we use this value as the delta+ it's weight
+                delta=v.distToTarget+v.weight;
+            }else { //If we don't have the calculated value from V to target we explore DFS from the point V
+                int subDFS= DFS_ExploreNew(v);
+                if (subDFS> delta) { //If our subDFS for this neighbour is longer than other neighbours we save the delta
+                    delta = subDFS; //We don't need to add the weight of the v here since it's included in the recursive return loop.
 
-        explorationIteration++;
+                }
+            }
+        }
+        //System.out.println("For Vertex: " + (char)(input.id+64) + "delta was set to: " +delta);
+        //We found the furthest distance for the point input and set the distance for this point to be accesible later.
+        input.distToTarget=delta;
+
+        return input.weight+delta;
+
+    }
+    private int DFSExplore_Test(Vertex input, int depth, int maxDepth) {
         for(Vertex v : input.neighbors) {
             if(v.distToTarget>-1){
                 if (depth + v.distToTarget > maxDepth) {

@@ -72,6 +72,15 @@ public class SequencePairs extends Algorithm {
         AdjanceyGraph thcg = new AdjanceyGraph();
         AdjanceyGraph tvcg = new AdjanceyGraph();
 
+
+
+
+
+
+        //System.out.println("Old: " + DFS(getSourceTest()) + ". New " + getSourceTest().DFS_Test() + ". Ass: " + getSourceTest().DFS_Ass());
+        //System.exit(130);
+
+
         Vertex sourceH = new Vertex(0,-1);
         Vertex targetH = new Vertex(0, -2);
         Vertex sourceV = new Vertex(0, -1);
@@ -94,18 +103,28 @@ public class SequencePairs extends Algorithm {
         thcg.vertices.add(targetH);
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
+
+
+        //int dist = Math.abs(DFS(sourceH));
+        int dist1=sourceH.DFS_New();
         /*
-        int dist = Math.abs(DFS(sourceH));
+        i
         System.out.println("Thcg size:" + thcg.vertices.size());
-        System.out.println("Dist old DFS: " + dist + ". Dist new DFS: " + sourceH.DFS_Test());
+        if(dist!=dist1){
+            System.out.println("Dist old DFS: " + dist + ". Dist new DFS: " + dist1);
+            System.out.println(thcg.vertices.toString());
+            System.exit(2);
+        }
+        //System.exit(0);
+        /*
         System.exit(0);
         int dist2 = Math.abs(DFS(sourceV));
         worstIdHorizontal = worstRoute(targetH);
         worstIdVertical = worstRoute(targetV);
         worstRoute(targetH);
         */
-        int dist = sourceH.DFS_Test();
-        int dist2 = sourceV.DFS_Test();
+        int dist = dist1;
+        int dist2 = sourceV.DFS_New();
         super.optimizationFactor = dist2*dist; // the variable we optimise for.
 
 
@@ -189,7 +208,7 @@ public class SequencePairs extends Algorithm {
     private int DFS(Vertex input) {
         DFSIt=0;
         int dfsDist=DFSExplore(input, 0, 0);
-        System.out.println("Old explore iterations: " + DFSIt);
+        //System.out.println("Old explore iterations: " + DFSIt);
         return dfsDist;
     }
 

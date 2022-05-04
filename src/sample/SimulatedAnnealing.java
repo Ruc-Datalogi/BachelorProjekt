@@ -21,7 +21,7 @@ public class SimulatedAnnealing {
         int amntRand = 0;
 
         while (tCur > tMin){
-            System.out.println(tCur + " " + tMin);
+            //System.out.println(tCur + " " + tMin);
             i++;
             currentOptimizationFactor = a1.optimizationFactor;
             ArrayList<Object> currentSolution = new ArrayList<>(a1.solution); //save old solution, so if we dont pick a new solution, we can revert to this
