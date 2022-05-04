@@ -48,6 +48,9 @@ class Vertex {
     }
     private int DFS_ExploreNew(Vertex input){
         int delta=0;
+        if (input.distToTarget>-1){
+            return input.weight+input.distToTarget;
+        }
         for(Vertex v: input.neighbors){
             if(v.distToTarget>-1 && delta<v.distToTarget){ //If we have already calculated the distance from v to target we use this value as the delta+ it's weight
                 delta=v.distToTarget+v.weight;
