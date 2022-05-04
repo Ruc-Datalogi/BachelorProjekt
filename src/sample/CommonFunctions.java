@@ -28,4 +28,21 @@ public class CommonFunctions {
         rightCommon.retainAll(rightNegiSlice);
         return rightCommon;
     }
+
+    public static double calculateSD(ArrayList<Integer> arrayList) {
+        int sum = 0;
+        int standardDeviation = 0;
+        int length = arrayList.size();
+        for (Integer i : arrayList) {
+            sum += i;
+        }
+
+        int mean = sum / length;
+        for (int i : arrayList) {
+            standardDeviation += Math.pow(i - mean, 2);
+        }
+
+        return Math.sqrt(standardDeviation/length);
+    }
+
 }

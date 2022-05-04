@@ -3,14 +3,13 @@ package sample;
 import java.util.*;
 
 public class SequencePairs extends Algorithm {
-    ArrayList<Integer> positiveSequence = new ArrayList<>();
-    ArrayList<Integer> negative = new ArrayList<>();
-    ArrayList<Module> modules = new ArrayList<>();
+    ArrayList<Integer> positiveSequence;
+    ArrayList<Integer> negative;
+    ArrayList<Module> modules;
     HashMap<Integer, Integer> mapPostive = new HashMap<>();
     HashMap<Integer, Integer> mapNegative = new HashMap<>();
     boolean rotate = false;
     int worstIdHorizontal;
-    int worstIdVertical;
     int iterationsSinceBest = 0;
     int bestDist = Integer.MAX_VALUE;
     float bestOptimazitionFactor;
@@ -30,24 +29,9 @@ public class SequencePairs extends Algorithm {
         }
     }
 
-
-
     public void calculatePlacementTable(){
 
         for(Module mod : modules){
-            /*
-            if(r.nextBoolean()) {
-                if(mod.id == worstIdHorizontal) {
-                    rotate = false;
-                    mod.rotate();
-                }
-            } else {
-                if(mod.id == worstIdVertical) {
-                    rotate = false;
-                    mod.rotate();
-                }
-            }
-            */
             if(mod.id == worstIdHorizontal){
                 rotate = false;
                 mod.rotate();
@@ -63,7 +47,7 @@ public class SequencePairs extends Algorithm {
             List<Integer> leftNegiSlice  = negative.subList(0, negiPositon);
             List<Integer> rightNegiSlice = negative.subList(negiPositon+1, negative.size() );
 
-            mod.leftOf  = CommonFunctions.getCommon(leftPosSlice, leftNegiSlice);
+            mod.leftOf  = CommonFunctions.getCommon(leftPosSlice, leftNegiSlice);    //TODO this is slow
             mod.rightOf = CommonFunctions.getCommon(rightPosSlice, rightNegiSlice);
             mod.above   = CommonFunctions.getCommon(rightNegiSlice,leftPosSlice);
             mod.below   = CommonFunctions.getCommon(leftNegiSlice,rightPosSlice);
@@ -71,15 +55,6 @@ public class SequencePairs extends Algorithm {
 
         AdjanceyGraph thcg = new AdjanceyGraph();
         AdjanceyGraph tvcg = new AdjanceyGraph();
-
-
-
-
-
-
-        //System.out.println("Old: " + DFS(getSourceTest()) + ". New " + getSourceTest().DFS_Test() + ". Ass: " + getSourceTest().DFS_Ass());
-        //System.exit(130);
-
 
         Vertex sourceH = new Vertex(0,-1);
         Vertex targetH = new Vertex(0, -2);
@@ -227,25 +202,10 @@ public class SequencePairs extends Algorithm {
         return maxDepth;
     }
 
-    private int DFSTArget(Vertex input, Vertex target) {
-        return DFSTargetExplore(input, target, 0,0);
-    }
-
     private void swapInMap(HashMap<Integer, Integer> map, int id1 , int id2) {
         Integer tempValue = map.get(id1);
         map.put(id1, map.get(id2));
         map.put(id2, tempValue);
-    }
-
-    private int DFSTargetExplore(Vertex input, Vertex target, int depth, int maxDepth){
-        if(input.id == target.id) return maxDepth;
-        for(Vertex v: input.neighbors) {
-            if(depth + v.weight > maxDepth && v.id == target.id ){
-                maxDepth = depth;
-            }
-            maxDepth = DFSTargetExplore(v, target,depth + v.weight, maxDepth);
-        }
-        return maxDepth;
     }
 
     @Override
@@ -253,15 +213,9 @@ public class SequencePairs extends Algorithm {
 
         //int swap1;
         Random random = new Random();
-        /*
-        if (random.nextBoolean()) {
-            swap1 = worstIdHorizontal - 1;
-        } else {
-            swap1 = worstIdVertical - 1;
-        }
-        */
+
         int randomIndex1 = random.nextInt(positiveSequence.size());
-        int randomIndex2  = random.nextInt(positiveSequence.size());
+        int randomIndex2 = random.nextInt(positiveSequence.size());
 
         int id1 = positiveSequence.get(randomIndex1);
         int id2 = positiveSequence.get(randomIndex2);
@@ -271,40 +225,25 @@ public class SequencePairs extends Algorithm {
         }
 
 
-        switch (random.nextInt(0,2)) {
-            case 0: // Dual swap
-                Collections.swap(positiveSequence,randomIndex1,randomIndex2);
+        switch (random.nextInt(0, 2)) {
+            case 0 -> { // Dual swap
+                Collections.swap(positiveSequence, randomIndex1, randomIndex2);
                 swapInMap(mapPostive, id1, id2);
-                Collections.swap(negative,mapNegative.get(id1), mapNegative.get(id2));
+                Collections.swap(negative, mapNegative.get(id1), mapNegative.get(id2));
                 swapInMap(mapNegative, id1, id2);
-                break;
-            case 1: // Single Swap Positive
-                Collections.swap(positiveSequence,randomIndex1,randomIndex2);
+            }
+            case 1 -> { // Single Swap Positive
+                Collections.swap(positiveSequence, randomIndex1, randomIndex2);
                 swapInMap(mapPostive, id1, id2);
-                break;
-            case 2: // Single Swap Negative
-                System.out.println("ih");
-                Collections.swap(negative,randomIndex1,randomIndex2);
+            }
+            case 2 -> { // Single Swap Negative
+                Collections.swap(negative, randomIndex1, randomIndex2);
                 swapInMap(mapNegative, id1, id2);
-                break;
-                /*
-            case 3: // Slicing swap Positive
-                ArrayList<Integer> subList1 = new ArrayList<>(positive.subList(0, positive.indexOf(swap1)));
-                ArrayList<Integer> subList2 = new ArrayList<>(positive.subList(positive.indexOf(swap1) + 1, positive.size()));
-                subList2.add(positive.get(positive.indexOf(swap1)));
-                subList1.addAll(subList2);
-                positive = subList1;
-            case 4: // Slicing swap Positive
-                ArrayList<Integer> subLists1 = new ArrayList<>(negative.subList(0, negative.indexOf(swap1)));
-                ArrayList<Integer> subLists2 = new ArrayList<>(negative.subList(negative.indexOf(swap1) + 1, negative.size()));
-                subLists2.add(negative.get(negative.indexOf(swap1)));
-                subLists1.addAll(subLists2);
-                negative = subLists1;
-                */
-            case 5: // Rotate
-                rotate = true;
-                break;
+            }
+            case 5 -> // Rotate
+                    rotate = true;
         }
+
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positiveSequence);
         solutions.add(negative);
@@ -346,15 +285,6 @@ class Module implements Comparable<Module>{
         this.id = id;
         this.width = width;
         this.height = height;
-    }
-
-    int getPositiveIndex(){
-        return positiveIndex;
-
-    }
-
-    int getNegativeIndex(){
-        return negativeIndex;
     }
 
     public void setPositiveIndex(int positiveIndex) {
