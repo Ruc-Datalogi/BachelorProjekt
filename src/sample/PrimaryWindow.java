@@ -102,7 +102,7 @@ public class PrimaryWindow {
         }
         averageAmountRectangles = sum/rectangles.size();
         STDRectangles = CommonFunctions.calculateSD(rectangles);
-
+        /*
         for (int j =  0 ; j < 10 ; j++ ) {
             int startTemp = 2000000-j*5000;
             float minTemp = 0.005f;
@@ -162,16 +162,47 @@ public class PrimaryWindow {
             );
         }
 
-        CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test"+".csv", testResult);
+        */
+
+        //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test"+".csv", testResult);
         //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "testResults.csv",testResult);
 
         GenerateRectangleDataSet generateRectangleDataSet = new GenerateRectangleDataSet(200,200);
         SequencePairs testSeq = generateRectangleDataSet.generateSeq();
         /*
+        DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2,6,7,8)),
+                new ArrayList<Integer>(Arrays.asList(3,6,5,7,8,1,2,5,4)),
+                new ArrayList<Module>(Arrays.asList(
+                        new Module(1,2,4),
+                        new Module(2,1,3),
+                        new Module(3,2,2),
+                        new Module(4,3,4),
+                        new Module(5,2,1),
+                        new Module(6,2,1),
+                        new Module(7,3,5),
+                        new Module(8,1,5),
+                        new Module(9,1,5),
+                        new Module(10,1,2),
+                        new Module(11,2,3),
+                        new Module(12,1,5),
+                        new Module(13,4,4),
+                        new Module(14,2,2)
+                )));
+         */
+
+        DivideAndConquer divideAndConquer = generateRectangleDataSet.generateDivideAndConquer();
+
+        divideAndConquer.calculatePlacement();
+
+
+
+
+        /*
         SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules);
         */
+
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);

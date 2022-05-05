@@ -1,6 +1,7 @@
 package sample;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +22,11 @@ public class CommonFunctions {
             tempList.remove(index);
         }
         return outputList;
+    }
+    public static void swapInMap(HashMap<Integer, Integer> map, int id1 , int id2) {
+        Integer tempValue = map.get(id1);
+        map.put(id1, map.get(id2));
+        map.put(id2, tempValue);
     }
 
     public static List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {

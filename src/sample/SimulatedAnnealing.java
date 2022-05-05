@@ -38,7 +38,9 @@ public class SimulatedAnnealing {
             }
 
             tCur *= coolingRate;
-
+            if(i > 65000) {
+                break;
+            }
         }
 
         finalSolution = a1.solution;

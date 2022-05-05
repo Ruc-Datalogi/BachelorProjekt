@@ -1,12 +1,13 @@
 package sample;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
+
+import static sample.CommonFunctions.swapInMap;
 
 
 // remember we dont save the init module id maybe do that
-public class DivideAndConquer extends Algorithm{
+public class DivideAndConquer {
 
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
@@ -17,14 +18,17 @@ public class DivideAndConquer extends Algorithm{
         this.positive = positive;
         this.negative = negative;
         this.modules = modules;
+        for(Module mod : modules) {
+            mod.realdId = mod.id;
+        }
         this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(modules.size()));
     }
 
-    public void calculatePlacement() {
+    public ArrayList<Bucket> generateBuckets(ArrayList<Module> moduleArrayList){
         ArrayList<Module> rectangles = new ArrayList<>();
         ArrayList<Module> squares = new ArrayList<>();
-        ArrayList<Bucket> buckets = new ArrayList<>();
-        for (Module mod : modules) { // Check if module is a rectangle or a square
+        ArrayList<Bucket> outPutBuckets = new ArrayList<>();
+        for (Module mod : moduleArrayList) { // Check if module is a rectangle or a square
             if ((float) mod.height / (float) mod.width >= 2 || (float) mod.height / (float) mod.width <= 0.5) {
                 rectangles.add(mod);
             } else {
@@ -40,7 +44,7 @@ public class DivideAndConquer extends Algorithm{
             currBucket.modules.add(mod);
             index++;
             if (currBucket.modules.size() == bucketSize) {
-                buckets.add(currBucket);
+                outPutBuckets.add(currBucket);
                 currBucket = new Bucket();
                 currBucket.rectangular = true;
                 index = 1;
@@ -52,23 +56,58 @@ public class DivideAndConquer extends Algorithm{
             currBucket.modules.add(mod);
             index++;
             if (currBucket.modules.size() == bucketSize ) {
-                buckets.add(currBucket);
+                outPutBuckets.add(currBucket);
                 currBucket = new Bucket();
                 currBucket.rectangular = false;
                 index = 1;
             }
         }
-        if(currBucket.modules.size() != 0 ) buckets.add(currBucket); // Make sure we get every module in a bucket
-        ArrayList<SubProblem> subProblems = new ArrayList<>();
 
-        for(int i = 0 ; i < buckets.size() ; i++ ){
-           subProblems.add(new SubProblem(buckets.get(i)));
+        if(currBucket.modules.size() != 0 ) outPutBuckets.add(currBucket);
+        return outPutBuckets;
+    }
+
+    public SubProblem calculateSubProblem(SubProblem p) throws IOException {
+        SimulatedAnnealing sa = new SimulatedAnnealing();
+        sa.simulatedAnnealing(p, 10000,0,0.9f);
+        return p;
+    }
+
+    public ArrayList<Module> calculateSuperModules(ArrayList<SubProblem> subProblems) {
+        ArrayList<Module> superModules = new ArrayList<>();
+        int i = 1;
+        for(SubProblem subProblem : subProblems) {
+            Module m = new Module(i, subProblem.width, subProblem.height);
+            m.subModules.addAll(subProblem.bucket.modules);
+            superModules.add(m);
+            i++;
         }
+        return superModules;
+    }
 
-        for (SubProblem subProblem : subProblems) {
-            System.out.println(subProblem);
+    public void calculatePlacement() throws IOException {
+        ArrayList<Bucket> buckets = new ArrayList<>();
+        buckets.addAll(generateBuckets(modules));
+        int size = Integer.MAX_VALUE;
+        while(size != 1) {
+            ArrayList<SubProblem> subProblems = new ArrayList<>();
+            for (Bucket b : buckets) {
+                subProblems.add(new SubProblem(b));
+            }
+
+            for (SubProblem subProblem : subProblems) {
+                calculateSubProblem(subProblem);
+            }
+
+            ArrayList<Module> superModules = calculateSuperModules(subProblems);
+            buckets.clear();
+            if (superModules.size() == 1)  System.out.println(superModules.get(0).width * superModules.get(0).height);
+            buckets.addAll(generateBuckets(superModules));
+            size = superModules.size();
         }
     }
+
+
 
     private boolean isPerfect(int N){
         if ((Math.sqrt(N) - Math.floor(Math.sqrt(N))) != 0)
@@ -112,17 +151,23 @@ public class DivideAndConquer extends Algorithm{
             return aboveN;
     }
 
-
-
-    @Override
-    void execute() {
-
-    }
 }
 
+class Problem {
+    ArrayList<SubProblem> subProblems = new ArrayList<>();
+
+    public SubProblem isDone() {
+        if (subProblems.size() == 1){
+            return subProblems.get(0);
+        }
+        return null;
+    }
+
+}
 
 class Bucket {
     public ArrayList<Module> modules = new ArrayList<>();
+    public ArrayList<Bucket> subBuckets = new ArrayList<>();
     boolean rectangular;
 
     @Override
@@ -143,10 +188,12 @@ class SubProblem extends Algorithm{
     HashMap<Integer, Integer> mapNegative = new HashMap<>();
     AdjanceyGraph thcg = new AdjanceyGraph();
     AdjanceyGraph tvcg = new AdjanceyGraph();
-    int bestVerticalDistance = Integer.MAX_VALUE;
-    int bestHorizontalDistance = Integer.MAX_VALUE;
+    HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
     float bestOptimazitionFactor;
     int bestDist = Integer.MAX_VALUE;
+    int width;
+    int height;
+
 
     SubProblem (Bucket b) {
         this.bucket = b;
@@ -166,7 +213,7 @@ class SubProblem extends Algorithm{
 
     private void calculateSequencePlacements() {
         for(Module mod : bucket.modules) {
-            int posiPosition = mapPostive.get(mod.id); // TODO REMEMBER TO CHANGE INDEX OF HASH MAPS
+            int posiPosition = mapPostive.get(mod.id);
             mod.setPositiveIndex(posiPosition);
             int negiPositon = mapNegative.get(mod.id);
             mod.setNegativeIndex(negiPositon);
@@ -181,10 +228,6 @@ class SubProblem extends Algorithm{
             mod.above   = CommonFunctions.getCommon(rightNegiSlice,leftPosSlice);
             mod.below   = CommonFunctions.getCommon(leftNegiSlice,rightPosSlice);
         }
-    }
-
-    public void calculatePlacementTable() {
-
     }
 
     private void calculateGraph() {
@@ -218,14 +261,14 @@ class SubProblem extends Algorithm{
 
 
         if (dist2*dist < super.optimizationFactor){
+
             bestOptimazitionFactor = dist2*dist;
         }
 
         if (optimizationFactor < bestDist) {
-            //testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
-            //bestBin = testBin;
+            width = dist1;
+            height = dist2;
             bestDist = (int) optimizationFactor;
-            PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
     }
 
@@ -240,7 +283,40 @@ class SubProblem extends Algorithm{
 
     @Override
     void execute() {
+        //int swap1;
+        Random random = new Random();
+        int randomIndex1 = random.nextInt(positive.size());
+        int randomIndex2 = random.nextInt(negative.size());
 
+        int id1 = positive.get(randomIndex1);
+        int id2 = positive.get(randomIndex2);
+
+        switch (random.nextInt(0, 2)) {
+            case 0 -> { // Dual swap
+                Collections.swap(positive, randomIndex1, randomIndex2);
+                swapInMap(mapPostive, id1, id2);
+                Collections.swap(negative, mapNegative.get(id1), mapNegative.get(id2));
+                swapInMap(mapNegative, id1, id2);
+            }
+            case 1 -> { // Single Swap Positive
+                Collections.swap(positive, randomIndex1, randomIndex2);
+                swapInMap(mapPostive, id1, id2);
+            }
+            case 2 -> { // Single Swap Negative
+                Collections.swap(negative, randomIndex1, randomIndex2);
+                swapInMap(mapNegative, id1, id2);
+            }
+        }
+
+        ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
+        solutions.add(positive);
+        solutions.add(negative);
+        this.solution = solutions;
+
+        if (solutionSet.add(solutions)) {
+            this.calculateSequencePlacements();
+            this.calculateGraph();
+        }
     }
 }
 

@@ -2,6 +2,8 @@ package sample;
 
 import java.util.*;
 
+import static sample.CommonFunctions.swapInMap;
+
 public class SequencePairs extends Algorithm {
     ArrayList<Integer> positiveSequence;
     ArrayList<Integer> negative;
@@ -132,10 +134,9 @@ public class SequencePairs extends Algorithm {
     }
 
 
-    private void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
+    public static void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
         for (Vertex v : graph.vertices) {
             Module thisMod = modules.get(v.id - 1);
-
             if (isHorizontal) {
                 if (thisMod.leftOf.size() == 0) {
                     source.neighbors.add(v);
@@ -202,11 +203,6 @@ public class SequencePairs extends Algorithm {
         return maxDepth;
     }
 
-    private void swapInMap(HashMap<Integer, Integer> map, int id1 , int id2) {
-        Integer tempValue = map.get(id1);
-        map.put(id1, map.get(id2));
-        map.put(id2, tempValue);
-    }
 
     @Override
     void execute() {
@@ -258,10 +254,12 @@ public class SequencePairs extends Algorithm {
 
 class Module implements Comparable<Module>{
     int id;
+    int realdId = -1;
     int width;
     int height;
     int positiveIndex=-1;
     int negativeIndex=-1;
+    ArrayList<Module> subModules = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -274,6 +272,10 @@ class Module implements Comparable<Module>{
                 ", Above=" + above +
                 ", Below=" + below +
                 '}';
+    }
+
+    public ArrayList<Module> getSubModules() {
+        return subModules;
     }
 
     List<Integer> rightOf = new ArrayList<>();
