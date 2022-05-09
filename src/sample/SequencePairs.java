@@ -12,7 +12,7 @@ public class SequencePairs extends Algorithm {
     int worstIdHorizontal;
     int iterationsSinceBest = 0;
     int bestDist = Integer.MAX_VALUE;
-    float bestOptimazitionFactor;
+    float bestOptimazitionFactor = Integer.MAX_VALUE;
     public Bin2D bestBin = new Bin2D();
     Bin2D testBin;
     HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
@@ -30,7 +30,6 @@ public class SequencePairs extends Algorithm {
     }
 
     public void calculatePlacementTable(){
-
         for(Module mod : modules){
             if(mod.id == worstIdHorizontal){
                 rotate = false;
@@ -79,39 +78,17 @@ public class SequencePairs extends Algorithm {
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
 
-
-        //int dist = Math.abs(DFS(sourceH));
         int dist1=sourceH.DFS_New();
-        /*
-        i
-        System.out.println("Thcg size:" + thcg.vertices.size());
-        if(dist!=dist1){
-            System.out.println("Dist old DFS: " + dist + ". Dist new DFS: " + dist1);
-            System.out.println(thcg.vertices.toString());
-            System.exit(2);
-        }
-        //System.exit(0);
-        /*
-        System.exit(0);
-        int dist2 = Math.abs(DFS(sourceV));
-        worstIdHorizontal = worstRoute(targetH);
-        worstIdVertical = worstRoute(targetV);
-        worstRoute(targetH);
-        */
-        int dist = dist1;
         int dist2 = sourceV.DFS_New();
-        super.optimizationFactor = dist2*dist; // the variable we optimise for.
+        super.optimizationFactor = dist2*dist1; // the variable we optimise for.
 
-
-        if (dist2*dist < super.optimizationFactor){
-            bestOptimazitionFactor = dist2*dist;
-        }
+        iterationsSinceBest++;
 
         if (optimizationFactor < bestDist) {
-            //testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
-            //bestBin = testBin;
             bestDist = (int) optimizationFactor;
-            PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
+            System.out.println("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2);
+            iterationsSinceBest = 0;
+            PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
     }
 
@@ -132,6 +109,7 @@ public class SequencePairs extends Algorithm {
     }
 
 
+    //TODO Slow
     private void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
         for (Vertex v : graph.vertices) {
             Module thisMod = modules.get(v.id - 1);
@@ -155,8 +133,6 @@ public class SequencePairs extends Algorithm {
                     thisMod.above.forEach(index -> v.neighbors.add(graph.vertices.get(index - 1)));
                 }
             }
-
-
         }
     }
 
@@ -171,7 +147,6 @@ public class SequencePairs extends Algorithm {
 
                     Box2D currentBox = new Box2D(vx.maxDepth*scalar, vy.maxDepth*scalar , currentMod.width*scalar, currentMod.height*scalar);
                     currentBox.setId(vx.id);
-                    //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
                 }
             }
@@ -183,7 +158,6 @@ public class SequencePairs extends Algorithm {
     private int DFS(Vertex input) {
         DFSIt=0;
         int dfsDist=DFSExplore(input, 0, 0);
-        //System.out.println("Old explore iterations: " + DFSIt);
         return dfsDist;
     }
 
@@ -220,11 +194,6 @@ public class SequencePairs extends Algorithm {
         int id1 = positiveSequence.get(randomIndex1);
         int id2 = positiveSequence.get(randomIndex2);
 
-        if(bestOptimazitionFactor < super.optimizationFactor){
-            iterationsSinceBest = 0;
-        }
-
-
         switch (random.nextInt(0, 2)) {
             case 0 -> { // Dual swap
                 Collections.swap(positiveSequence, randomIndex1, randomIndex2);
@@ -247,8 +216,8 @@ public class SequencePairs extends Algorithm {
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positiveSequence);
         solutions.add(negative);
+
         this.solution = solutions;
-        iterationsSinceBest++;
 
         if (solutionSet.add(solutions)) {
             this.calculatePlacementTable(); // clean the table //TODO figure out if it needs to be earlier

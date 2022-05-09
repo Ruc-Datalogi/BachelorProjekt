@@ -104,9 +104,10 @@ public class PrimaryWindow {
         STDRectangles = CommonFunctions.calculateSD(rectangles);
 
         for (int j =  0 ; j < 10 ; j++ ) {
-            int startTemp = 2000000-j*5000;
-            float minTemp = 0.005f;
-            float coolingRate = 0.9994f;
+            int startTemp = 2000000;
+            System.out.println(startTemp);
+            float minTemp = 0f;
+            float coolingRate = 0.999f;
 
             int iterationsSA = 0;
 
@@ -123,6 +124,8 @@ public class PrimaryWindow {
 
                     BoxArray.add(new Simple2DBox(Integer.parseInt(split[0]),Integer.parseInt(split[1])));
                 }
+                bufferedReader.close();
+
 
                 ArrayList<Integer> positive = new ArrayList<>();
                 ArrayList<Integer> negative = new ArrayList<>();
@@ -174,7 +177,7 @@ public class PrimaryWindow {
         */
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
+        sa.simulatedAnnealing(testSeq, 20000000,0f,0.99f);
         //painter.drawBoxesInBin(testSeq.testBin);
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
