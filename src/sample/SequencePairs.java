@@ -110,8 +110,8 @@ public class SequencePairs extends Algorithm {
         }
 
         if (optimizationFactor < bestDist) {
-            //testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
-            //bestBin = testBin;
+            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
+            bestBin = testBin;
             bestDist = (int) optimizationFactor;
             PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
@@ -170,7 +170,7 @@ public class SequencePairs extends Algorithm {
                 if(vx.id == vy.id && vx.id > 0){
                     Module currentMod = modules.get(vx.id-1);
 
-                    Box2D currentBox = new Box2D(vx.maxDepth*scalar, vy.maxDepth*scalar , currentMod.width*scalar, currentMod.height*scalar);
+                    Box2D currentBox = new Box2D((wH -vx.distToTarget-vx.weight)  *scalar, (wV-vy.distToTarget-vy.weight)*scalar , currentMod.width*scalar, currentMod.height*scalar);
                     currentBox.setId(vx.id);
                     //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
@@ -255,11 +255,13 @@ public class SequencePairs extends Algorithm {
 class Module implements Comparable<Module>{
     int id;
     int realdId = -1;
+    int depth = 0;
     int width;
     int height;
     int positiveIndex=-1;
     int negativeIndex=-1;
     ArrayList<Module> subModules = new ArrayList<>();
+    SubProblem subProblem = new SubProblem();
 
     @Override
     public String toString() {

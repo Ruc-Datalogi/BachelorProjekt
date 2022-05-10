@@ -16,7 +16,6 @@ public class GenerateRectangleDataSet {
     public GenerateRectangleDataSet(int maxW, int maxH) {
         Simple2DBox ourBox=new Simple2DBox(maxW,maxH);
         SliceBox(ourBox);
-        System.out.println(BoxArray.size());
     }
 
     public SequencePairs generateSeq() {

@@ -163,10 +163,8 @@ public class PrimaryWindow {
         }
 
         */
-
         //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test"+".csv", testResult);
         //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "testResults.csv",testResult);
-
         GenerateRectangleDataSet generateRectangleDataSet = new GenerateRectangleDataSet(200,200);
         SequencePairs testSeq = generateRectangleDataSet.generateSeq();
         /*
@@ -192,7 +190,9 @@ public class PrimaryWindow {
 
         DivideAndConquer divideAndConquer = generateRectangleDataSet.generateDivideAndConquer();
 
-        divideAndConquer.calculatePlacement();
+        SequencePairs sequencePairs = divideAndConquer.calculatePlacement();
+        painter.drawBoxesInBin(sequencePairs.bestBin);
+
 
 
 
