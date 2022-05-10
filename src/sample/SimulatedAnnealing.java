@@ -2,7 +2,6 @@ package sample;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SimulatedAnnealing {
     ArrayList<?> finalSolution;
@@ -12,7 +11,7 @@ public class SimulatedAnnealing {
 
     float delta;
 
-    <T> void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float coolingRate) throws IOException {
+    void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float coolingRate) throws IOException {
         float tCur = tMax; //tCur is the current temperature at a given step
         float currentOptimizationFactor;
 
@@ -28,14 +27,18 @@ public class SimulatedAnnealing {
 
             delta = a1.optimizationFactor -  currentOptimizationFactor;
 
+            if (bestSoln > a1.optimizationFactor) { //memorize best solution
+                bestSoln = a1.optimizationFactor;
+                bestSolution = a1.solution;
+            }
 
             if(delta < 0){ //direction of < changes whether you want to minimize or maximize. if better we pick solution
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
             } else if (delta != 0 && Math.exp((-delta)/tCur) > Math.random())  { //if lucky we should pick this
-                //System.out.println(Math.exp((-delta)/tCur) + " " + Math.random());
                 iterList.add(i);
                 energyList.add(String.valueOf(a1.optimizationFactor));
+
             } else { //if we dont pick a new solution in the delta block, and the temp block, we need to set the algorithms solution set to the old solution.
                 a1.solution = currentSolution;
                 a1.optimizationFactor = currentOptimizationFactor;
@@ -43,17 +46,12 @@ public class SimulatedAnnealing {
 
             tCur *= coolingRate;
 
-            if (bestSoln > a1.optimizationFactor) {
-                bestSoln = a1.optimizationFactor;
-                bestSolution = a1.solution;
-            }
 
-            //System.out.println(a1.optimizationFactor);
-            if(i > 65000) {
-                //System.out.println("breaking");
+            if(i > 100000) {
                 break;
             }
         }
+
 
         //TODO make sure we have bestsoln here.
         System.out.println("best soln found " + bestSoln);
