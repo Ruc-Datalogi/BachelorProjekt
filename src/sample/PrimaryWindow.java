@@ -64,9 +64,6 @@ public class PrimaryWindow {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
-
         });
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
@@ -109,11 +106,13 @@ public class PrimaryWindow {
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules);
         */
+        /*
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
         painter.drawBoxesInBin(testSeq.testBin);
 
+         */
         /*
         DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2,6,7,8)),
                 new ArrayList<Integer>(Arrays.asList(3,6,5,7,8,1,2,5,4)),
@@ -135,7 +134,7 @@ public class PrimaryWindow {
                 )));
          */
         int MAX = Integer.MAX_VALUE;
-        DivideAndConquer best;
+        SequencePairs sequencePairsBest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Module>(Arrays.asList(new Module(1,1,1))));
         for (int i = 0 ; i < 10 ; i++) {
             GenerateRectangleDataSet generateRectangleDataSet1 = new GenerateRectangleDataSet(200,200);
             DivideAndConquer divideAndConquer = generateRectangleDataSet1.generateDivideAndConquer();
@@ -143,15 +142,10 @@ public class PrimaryWindow {
             SequencePairs sequencePairs = divideAndConquer.calculatePlacement();
             if(divideAndConquer.bestArea < MAX ) {
                 MAX = divideAndConquer.bestArea;
-                best = divideAndConquer;
+                sequencePairsBest = sequencePairs;
             }
         }
-        //painter.drawBoxesInBin(bestSeq.bestBin);
-
-
-
-
-
+        painter.drawBoxesInBin(sequencePairsBest.bestBin);
 
         /*
         SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),

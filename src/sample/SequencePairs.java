@@ -233,7 +233,7 @@ class Module implements Comparable<Module>{
     int positiveIndex=-1;
     int negativeIndex=-1;
     int realdId = - 1;
-    SubProblem subProblem;
+    SubProblem subProblem = new SubProblem();
     ArrayList<Module> subModules = new ArrayList<>();
 
     @Override

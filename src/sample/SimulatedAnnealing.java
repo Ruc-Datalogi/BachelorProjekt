@@ -46,13 +46,13 @@ public class SimulatedAnnealing {
 
             tCur *= coolingRate;
             if(i>100000){
-                System.out.println("Breaking out of SA after 100k iterations");
+                //System.out.println("Breaking out of SA after 100k iterations");
                 break;
             }
 
         }
         //TODO make sure we have bestsoln here.
-        System.out.println("best soln found " + bestSoln);
+        //System.out.println("best soln found " + bestSoln);
         finalSolution = bestSolution;
 
 
