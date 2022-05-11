@@ -16,6 +16,7 @@ public class DivideAndConquer {
     SequencePairs finalFinalFinalTest;
     int depth = 0;
     int bucketSize;
+    int bestArea = Integer.MAX_VALUE;
 
     public DivideAndConquer (ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positive = positive;
@@ -32,9 +33,9 @@ public class DivideAndConquer {
         ArrayList<Module> rectangles = new ArrayList<>();
         ArrayList<Module> squares = new ArrayList<>();
         ArrayList<Bucket> outPutBuckets = new ArrayList<>();
-        // bucketSize = (int) Math.sqrt(getClosestPerfectSquare(moduleArrayList.size()));
+        this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(moduleArrayList.size()));
         int index = 1;
-        if(bucketSize != 1 ) {
+        if(bucketSize != 1 ) { // TODO maybe not the right if cond if the bucket size is changing
             for (Module mod : moduleArrayList) { // Check if module is a rectangle or a square
                 if ((float) mod.height / (float) mod.width >= 2 || (float) mod.height / (float) mod.width <= 0.5) {
                     rectangles.add(mod);
@@ -73,109 +74,112 @@ public class DivideAndConquer {
             currBucket.modules.addAll(moduleArrayList);
             outPutBuckets.add(currBucket);
         }
-
         return outPutBuckets;
     }
 
     public SubProblem calculateSubProblem(SubProblem p) throws IOException {
+        //System.out.println("subproblem p " + p.positive + "  " +  p.negative + p.bucket.modules );
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(p, 10000,0,0.9f);
-
+        //System.out.println("i calculated for subproblem p " + p.positive + "  " +  p.negative + p.bucket.modules );
         return p;
     }
 
     public ArrayList<Module> calculateSuperModules(ArrayList<SubProblem> subProblems) {
         ArrayList<Module> superModules = new ArrayList<>();
         int i = 1;
-        depth++;
-        for(SubProblem subProblem : subProblems) {
-            Module m = new Module(i, subProblem.width, subProblem.height);
-            m.subProblem = subProblem;
-            m.depth = depth;
-            m.subModules.addAll(subProblem.bucket.modules);
+        for(SubProblem s : subProblems) {
+            Module m = new Module(i, s.width, s.height);
+            m.subProblem = s;
+            m.subModules.addAll(s.bucket.modules);
             superModules.add(m);
             i++;
         }
         return superModules;
     }
 
-    int depthss = 0;
     public SequencePairs calculatePlacement() throws IOException {
-        Module superModule = new Module(0,0,0);
+        Module superModule;
         ArrayList<Bucket> buckets = new ArrayList<>();
         buckets.addAll(generateBuckets(modules));
         int size = Integer.MAX_VALUE;
 
-        while(size != 1) {
-            SubProblem currProblem = new SubProblem();
+        while(true) {
             ArrayList<SubProblem> subProblems = new ArrayList<>();
+            ArrayList<Module> superModules = new ArrayList<>();
             for (Bucket b : buckets) {
                 subProblems.add(new SubProblem(b));
             }
-
             for (SubProblem subProblem : subProblems) {
                 calculateSubProblem(subProblem);
-                currProblem.subProblems.add(subProblem);
             }
-
-            ArrayList<Module> superModules = calculateSuperModules(subProblems); // TODO update bucket size :D
+            if (size != 1) superModules.addAll(calculateSuperModules(subProblems)); // TODO update bucket size :D
             buckets.clear();
-            if (superModules.size() == 1)  System.out.println(superModules.get(0).width * superModules.get(0).height);
             buckets.addAll(generateBuckets(superModules));
+            if (size == 1) {
+                superModule = calculateSuperModules(subProblems).get(0);
+                System.out.println(" super " + superModule);
+                System.out.println(superModule.width * superModule.height);
+                break;
+            }
             size = superModules.size();
-            if (size == 1) superModule = superModules.get(0);
         }
-        ArrayList<SubProblem> lastSubproblems = new ArrayList<>();
+        bestArea = superModule.width * superModule.height;
         ArrayList<Integer> finalPositive = new ArrayList<>();
         ArrayList<Integer> finalNegative = new ArrayList<>();
-        ArrayList<Module> finalModules = new ArrayList<>();
-        findSubproblems(superModule, lastSubproblems);
 
-        for(SubProblem subProblem : lastSubproblems) {
-            subProblem.updateSequenceList();
-            finalPositive.addAll(subProblem.positive);
-            finalNegative.addAll(subProblem.negative);
-            finalModules.addAll(subProblem.bucket.modules);
-        }
-        for(Module mod : finalModules) {
+        traverseTreePositive(superModule, finalPositive);
+        traverseTreeNegative(superModule, finalNegative);
+        for(Module mod : modules) {
             mod.id = mod.realdId;
-            mod.above.clear();
-            mod.below.clear();
-            mod.rightOf.clear();
-            mod.leftOf.clear();
         }
 
-        System.out.println(finalPositive);
-        System.out.println(finalNegative);
-        System.out.println(finalModules);
-        SequencePairs sequencePairs = new SequencePairs(finalPositive, finalNegative, finalModules);
+        SequencePairs sequencePairs = new SequencePairs(finalPositive, finalNegative, modules);
         sequencePairs.calculatePlacementTable();
-
         return sequencePairs;
     }
 
-    private ArrayList<SubProblem> findSubproblems(Module m, ArrayList<SubProblem> lastSubproblems) {
-            for(Module mod : m.subModules) {
-                if(mod.realdId > 0) {
-
-                    lastSubproblems.add(m.subProblem);
-                    break;
-                }
-            }
-            for(Module mod : m.subModules) {
-                findSubproblems(mod, lastSubproblems);
-            }
-        return lastSubproblems;
+    private void traverseTreePositive(Module m, ArrayList<Integer> bestPostive) {
+        for(Integer i : m.subProblem.bestPositive) {
+            traverseTreePositive(findModule(m.subModules, i), bestPostive);
+        }
+        if(m.subProblem.bestPositive.size() == 0) {
+            bestPostive.add(m.realdId);
+        }
     }
 
-    private boolean isPerfect(int N){
+    private void traverseTreeNegative(Module m, ArrayList<Integer> bestNegative) {
+        for(Integer i : m.subProblem.bestNegative) {
+            traverseTreeNegative(findModule(m.subModules, i), bestNegative);
+        }
+        if(m.subProblem.bestNegative.size() == 0) {
+            bestNegative.add(m.realdId);
+        }
+    }
+
+    private Module findModule(ArrayList<Module> modules, int ID) {
+        for(Module mod : modules) {
+            if(mod.id == ID) {
+                return mod;
+            }
+        }
+        return null;
+    }
+
+
+    private SequencePairs thirdTime(Module m) {
+        SequencePairs sequencePairs = new SequencePairs(m.subModules.get(0).subProblem.bestPositive, m.subModules.get(0).subProblem.bestNegative , m.subModules.get(0).subProblem.bucket.modules);
+        sequencePairs.calculatePlacementTable();
+        return sequencePairs;
+    }
+
+    private boolean isPerfect(int N) {
         if ((Math.sqrt(N) - Math.floor(Math.sqrt(N))) != 0)
             return false;
         return true;
     }
 
-    private int getClosestPerfectSquare(int N)
-    {
+    private int getClosestPerfectSquare(int N) {
         if (isPerfect(N)) {
             return N;
         }
@@ -230,19 +234,21 @@ class SubProblem extends Algorithm{
     Bucket bucket;
     ArrayList<Integer> positive = new ArrayList<>();
     ArrayList<Integer> negative = new ArrayList<>();
+    ArrayList<Integer> bestPositive = new ArrayList<>();
+    ArrayList<Integer> bestNegative = new ArrayList<>();
+
     HashMap<Integer, Integer> mapPostive = new HashMap<>();
     HashMap<Integer, Integer> mapNegative = new HashMap<>();
     AdjanceyGraph thcg = new AdjanceyGraph();
     AdjanceyGraph tvcg = new AdjanceyGraph();
     HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
     ArrayList<SubProblem> subProblems = new ArrayList<>();
-    static int realId = 1;
 
     float bestOptimazitionFactor;
     int bestDist = Integer.MAX_VALUE;
     int width;
     int height;
-
+    boolean updated = false;
     SubProblem () {
 
     }
@@ -319,11 +325,16 @@ class SubProblem extends Algorithm{
         if (optimizationFactor < bestDist) {
             width = dist1;
             height = dist2;
+            bestPositive.clear();
+            bestNegative.clear();
+            bestPositive.addAll(positive);
+            bestNegative.addAll(negative);
             bestDist = (int) optimizationFactor;
         }
     }
 
     public void updateSequenceList() {
+        updated = true;
         for(int i = 1 ; i < bucket.modules.size() + 1 ; i++) {
             positive.set(positive.indexOf(i), bucket.modules.get(i-1).realdId);
             negative.set(negative.indexOf(i), bucket.modules.get(i-1).realdId);

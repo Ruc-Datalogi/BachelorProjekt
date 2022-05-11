@@ -8,7 +8,7 @@ import java.util.Random;
 
 
 public class GenerateRectangleDataSet {
-    int minAnyDimension=35;
+    int minAnyDimension=15;
     int index;
 
     ArrayList<Simple2DBox> BoxArray = new ArrayList<Simple2DBox>();

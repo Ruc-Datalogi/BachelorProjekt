@@ -187,11 +187,22 @@ public class PrimaryWindow {
                         new Module(14,2,2)
                 )));
          */
+        int MAX = Integer.MAX_VALUE;
+        DivideAndConquer best;
+        SequencePairs bestSeq = new SequencePairs(new ArrayList<>(Arrays.asList(1)), new ArrayList<>(Arrays.asList(1)), new ArrayList<Module>(Arrays.asList(new Module(1,1,1))));
+        for (int i = 0 ; i < 10 ; i++) {
+            GenerateRectangleDataSet generateRectangleDataSet1 = new GenerateRectangleDataSet(200,200);
+            DivideAndConquer divideAndConquer = generateRectangleDataSet1.generateDivideAndConquer();
 
-        DivideAndConquer divideAndConquer = generateRectangleDataSet.generateDivideAndConquer();
+            SequencePairs sequencePairs = divideAndConquer.calculatePlacement();
+            if(divideAndConquer.bestArea < MAX ) {
+                MAX = divideAndConquer.bestArea;
+                best = divideAndConquer;
+                bestSeq = sequencePairs;
+            }
+        }
+        painter.drawBoxesInBin(bestSeq.bestBin);
 
-        SequencePairs sequencePairs = divideAndConquer.calculatePlacement();
-        painter.drawBoxesInBin(sequencePairs.bestBin);
 
 
 
