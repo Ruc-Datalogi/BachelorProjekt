@@ -18,7 +18,7 @@ class Vertex {
     int weight;
     int id;
     int maxDepth = -1;
-    public int distToTarget=-1;
+    int distToTarget=-1;
     private int explorationIteration=0;
     Vertex previousVertex;
     ArrayList<Vertex> neighbors = new ArrayList<>(); //TODO change structure?

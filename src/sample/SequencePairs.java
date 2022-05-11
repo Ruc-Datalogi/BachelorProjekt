@@ -2,8 +2,6 @@ package sample;
 
 import java.util.*;
 
-import static sample.CommonFunctions.swapInMap;
-
 public class SequencePairs extends Algorithm {
     ArrayList<Integer> positiveSequence;
     ArrayList<Integer> negative;
@@ -14,7 +12,7 @@ public class SequencePairs extends Algorithm {
     int worstIdHorizontal;
     int iterationsSinceBest = 0;
     int bestDist = Integer.MAX_VALUE;
-    float bestOptimazitionFactor;
+    float bestOptimazitionFactor = Integer.MAX_VALUE;
     public Bin2D bestBin = new Bin2D();
     Bin2D testBin;
     HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
@@ -32,7 +30,6 @@ public class SequencePairs extends Algorithm {
     }
 
     public void calculatePlacementTable(){
-
         for(Module mod : modules){
             if(mod.id == worstIdHorizontal){
                 rotate = false;
@@ -81,39 +78,19 @@ public class SequencePairs extends Algorithm {
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
 
-
-        //int dist = Math.abs(DFS(sourceH));
         int dist1=sourceH.DFS_New();
-        /*
-        i
-        System.out.println("Thcg size:" + thcg.vertices.size());
-        if(dist!=dist1){
-            System.out.println("Dist old DFS: " + dist + ". Dist new DFS: " + dist1);
-            System.out.println(thcg.vertices.toString());
-            System.exit(2);
-        }
-        //System.exit(0);
-        /*
-        System.exit(0);
-        int dist2 = Math.abs(DFS(sourceV));
-        worstIdHorizontal = worstRoute(targetH);
-        worstIdVertical = worstRoute(targetV);
-        worstRoute(targetH);
-        */
-        int dist = dist1;
         int dist2 = sourceV.DFS_New();
-        super.optimizationFactor = dist2*dist; // the variable we optimise for.
+        super.optimizationFactor = dist2*dist1; // the variable we optimise for.
 
-
-        if (dist2*dist < super.optimizationFactor){
-            bestOptimazitionFactor = dist2*dist;
-        }
+        iterationsSinceBest++;
 
         if (optimizationFactor < bestDist) {
-            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist, dist2);
-            bestBin = testBin;
+            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist1, dist2);
+            //bestBin = testBin;
             bestDist = (int) optimizationFactor;
-            PrimaryWindow.changeDebugMessage("Best (" + dist + "," + dist2 +") = " + dist*dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
+            System.out.println("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2);
+            iterationsSinceBest = 0;
+            PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
     }
 
@@ -134,9 +111,11 @@ public class SequencePairs extends Algorithm {
     }
 
 
-    public static void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
+    //TODO Slow
+    private void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
         for (Vertex v : graph.vertices) {
             Module thisMod = modules.get(v.id - 1);
+
             if (isHorizontal) {
                 if (thisMod.leftOf.size() == 0) {
                     source.neighbors.add(v);
@@ -156,8 +135,6 @@ public class SequencePairs extends Algorithm {
                     thisMod.above.forEach(index -> v.neighbors.add(graph.vertices.get(index - 1)));
                 }
             }
-
-
         }
     }
 
@@ -170,9 +147,8 @@ public class SequencePairs extends Algorithm {
                 if(vx.id == vy.id && vx.id > 0){
                     Module currentMod = modules.get(vx.id-1);
 
-                    Box2D currentBox = new Box2D((wH -vx.distToTarget-vx.weight)  *scalar, (wV-vy.distToTarget-vy.weight)*scalar , currentMod.width*scalar, currentMod.height*scalar);
+                    Box2D currentBox = new Box2D((wH-vx.distToTarget-vx.weight)*scalar, (wV-vy.distToTarget-vy.weight)*scalar , currentMod.width*scalar, currentMod.height*scalar);
                     currentBox.setId(vx.id);
-                    //System.out.println("[" + x.id + "]: DFS: [" + DFS(x) + "," + DFS(y) +"]  corrected: " + (width-DFS(x))+ "," + (DFS(y)-currentMod.height)  + " w:" +currentMod.width + ", h: " + currentMod.height);
                     bin.addBox(currentBox);
                 }
             }
@@ -184,7 +160,6 @@ public class SequencePairs extends Algorithm {
     private int DFS(Vertex input) {
         DFSIt=0;
         int dfsDist=DFSExplore(input, 0, 0);
-        //System.out.println("Old explore iterations: " + DFSIt);
         return dfsDist;
     }
 
@@ -203,6 +178,11 @@ public class SequencePairs extends Algorithm {
         return maxDepth;
     }
 
+    private void swapInMap(HashMap<Integer, Integer> map, int id1 , int id2) {
+        Integer tempValue = map.get(id1);
+        map.put(id1, map.get(id2));
+        map.put(id2, tempValue);
+    }
 
     @Override
     void execute() {
@@ -215,11 +195,6 @@ public class SequencePairs extends Algorithm {
 
         int id1 = positiveSequence.get(randomIndex1);
         int id2 = positiveSequence.get(randomIndex2);
-
-        if(bestOptimazitionFactor < super.optimizationFactor){
-            iterationsSinceBest = 0;
-        }
-
 
         switch (random.nextInt(0, 2)) {
             case 0 -> { // Dual swap
@@ -244,7 +219,6 @@ public class SequencePairs extends Algorithm {
         solutions.add(positiveSequence);
         solutions.add(negative);
         this.solution = solutions;
-        iterationsSinceBest++;
 
         if (solutionSet.add(solutions)) {
             this.calculatePlacementTable(); // clean the table //TODO figure out if it needs to be earlier
@@ -254,14 +228,10 @@ public class SequencePairs extends Algorithm {
 
 class Module implements Comparable<Module>{
     int id;
-    int realdId = -1;
-    int depth = 0;
     int width;
     int height;
     int positiveIndex=-1;
     int negativeIndex=-1;
-    ArrayList<Module> subModules = new ArrayList<>();
-    SubProblem subProblem = new SubProblem();
 
     @Override
     public String toString() {
@@ -274,10 +244,6 @@ class Module implements Comparable<Module>{
                 ", Above=" + above +
                 ", Below=" + below +
                 '}';
-    }
-
-    public ArrayList<Module> getSubModules() {
-        return subModules;
     }
 
     List<Integer> rightOf = new ArrayList<>();

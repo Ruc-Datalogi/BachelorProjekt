@@ -15,6 +15,16 @@ public class Box2D extends BoundaryBox{
         h=height;
     }
 
+    @Override
+    public String toString() {
+        return "Box2D{" +
+                "w=" + w +
+                ", h=" + h +
+                ", id=" + id +
+                super.getCornerA() + "" + super.getCornerB()+
+                '}';
+    }
+
     public void setId(int id) {
         this.id = id;
     }
