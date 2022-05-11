@@ -85,6 +85,8 @@ public class SequencePairs extends Algorithm {
         iterationsSinceBest++;
 
         if (optimizationFactor < bestDist) {
+            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist1, dist2);
+            //bestBin = testBin;
             bestDist = (int) optimizationFactor;
             System.out.println("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2);
             iterationsSinceBest = 0;
@@ -145,7 +147,7 @@ public class SequencePairs extends Algorithm {
                 if(vx.id == vy.id && vx.id > 0){
                     Module currentMod = modules.get(vx.id-1);
 
-                    Box2D currentBox = new Box2D(vx.maxDepth*scalar, vy.maxDepth*scalar , currentMod.width*scalar, currentMod.height*scalar);
+                    Box2D currentBox = new Box2D((wH-vx.distToTarget-vx.weight)*scalar, (wV-vy.distToTarget-vy.weight)*scalar , currentMod.width*scalar, currentMod.height*scalar);
                     currentBox.setId(vx.id);
                     bin.addBox(currentBox);
                 }
@@ -216,7 +218,6 @@ public class SequencePairs extends Algorithm {
         ArrayList<ArrayList<Integer>> solutions = new ArrayList<>();
         solutions.add(positiveSequence);
         solutions.add(negative);
-
         this.solution = solutions;
 
         if (solutionSet.add(solutions)) {

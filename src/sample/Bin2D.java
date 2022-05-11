@@ -42,10 +42,14 @@ public class Bin2D {
     }
 
     boolean addBox(Box2D box){
-
         containedBoxes.add(box);
         return true;
+    }
 
-
+    @Override
+    public String toString() {
+        return "Bin2D{" +
+                "containedBoxes=" + containedBoxes +
+                '}';
     }
 }
