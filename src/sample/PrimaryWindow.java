@@ -53,7 +53,7 @@ public class PrimaryWindow {
         showPlot.setOnAction(a -> {
             plotPython();
         });
-        Button doSATests = new Button("TestData");
+        Button doSATests = new Button("TestSA");
         doSATests.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         doSATests.setOnAction(a-> {
                 try {
@@ -61,6 +61,15 @@ public class PrimaryWindow {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+        });
+        Button divideButton = new Button("Divide");
+        divideButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        divideButton.setOnAction(a-> {
+            try {
+                divideAndConquerRunTestSet();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
@@ -145,7 +154,7 @@ public class PrimaryWindow {
         }
 
          */
-        divideAndConquerRunTestSet();
+
         /*
         SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
@@ -165,7 +174,7 @@ public class PrimaryWindow {
         HBox mainHBox = new HBox();
         hBox.setSpacing(40);
         hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, showPlot, doSATests);
+        hBox.getChildren().addAll(comboBoxDimensions, comboBoxAlgorithms, showPlot, doSATests,divideButton);
         mainHBox.setSpacing(8);
         mainHBox.setAlignment(Pos.CENTER);
         mainHBox.getChildren().addAll(mainCanvas, debugTextField);
