@@ -8,7 +8,7 @@ import java.util.Random;
 
 
 public class GenerateRectangleDataSet {
-    int minAnyDimension=35;
+    int minAnyDimension=15;
     int index;
 
     ArrayList<Simple2DBox> BoxArray = new ArrayList<Simple2DBox>();
@@ -48,6 +48,21 @@ public class GenerateRectangleDataSet {
 
         return new SequencePairs(positive, negative, modules);
     }
+
+    public DivideAndConquer generateDivideAndConquer() {
+        ArrayList<Integer> positive = new ArrayList<>();
+        ArrayList<Integer> negative = new ArrayList<>();
+        ArrayList<Module> modules = new ArrayList<>();
+
+        for (int i = 0; i < BoxArray.size() ; i ++) {
+            positive.add(i + 1);
+            negative.add(i + 1);
+            modules.add(new Module(i+1, BoxArray.get(i).w, BoxArray.get(i).h));
+        }
+
+        return new DivideAndConquer(positive, negative, modules);
+    }
+
     boolean sliceW=false;
     void SliceBox(Simple2DBox box){
         index ++;

@@ -225,7 +225,7 @@ public class SequencePairs extends Algorithm {
 
 
     //TODO Slow
-    private void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
+    public static void createTempGraph(AdjanceyGraph graph, ArrayList<Module> modules, Vertex source, Vertex target, boolean isHorizontal) {
         for (Vertex v : graph.vertices) {
             Module thisMod = modules.get(v.id - 1);
 
@@ -345,6 +345,9 @@ class Module implements Comparable<Module>{
     int height;
     int positiveIndex=-1;
     int negativeIndex=-1;
+    int realdId = - 1;
+    SubProblem subProblem = new SubProblem();
+    ArrayList<Module> subModules = new ArrayList<>();
 
     @Override
     public String toString() {

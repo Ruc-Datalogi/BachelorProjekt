@@ -64,9 +64,6 @@ public class PrimaryWindow {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
-
         });
         Button calculate = new Button("Calculate");
         calculate.setPrefSize(BUTTON_WIDTH,BUTTON_HEIGHT);
@@ -109,10 +106,54 @@ public class PrimaryWindow {
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules);
         */
+        /*
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
         painter.drawBoxesInBin(testSeq.testBin);
+
+         */
+        /*
+        DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2,6,7,8)),
+                new ArrayList<Integer>(Arrays.asList(3,6,5,7,8,1,2,5,4)),
+                new ArrayList<Module>(Arrays.asList(
+                        new Module(1,2,4),
+                        new Module(2,1,3),
+                        new Module(3,2,2),
+                        new Module(4,3,4),
+                        new Module(5,2,1),
+                        new Module(6,2,1),
+                        new Module(7,3,5),
+                        new Module(8,1,5),
+                        new Module(9,1,5),
+                        new Module(10,1,2),
+                        new Module(11,2,3),
+                        new Module(12,1,5),
+                        new Module(13,4,4),
+                        new Module(14,2,2)
+                )));
+         */
+        int MAX = Integer.MAX_VALUE;
+        SequencePairs sequencePairsBest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Module>(Arrays.asList(new Module(1,1,1))));
+        for (int i = 0 ; i < 10 ; i++) {
+            GenerateRectangleDataSet generateRectangleDataSet1 = new GenerateRectangleDataSet(200,200);
+            DivideAndConquer divideAndConquer = generateRectangleDataSet1.generateDivideAndConquer();
+
+            SequencePairs sequencePairs = divideAndConquer.calculatePlacement();
+            if(divideAndConquer.bestArea < MAX ) {
+                MAX = divideAndConquer.bestArea;
+                sequencePairsBest = sequencePairs;
+            }
+        }
+        painter.drawBoxesInBin(sequencePairsBest.bestBin);
+
+        /*
+        SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
+                CommonFunctions.randomIntegerList(State.getState().modules.size()),
+                State.getState().modules);
+        */
+
+        //painter.drawBoxesInBin(testSeq.testBin);
 
         ComboBox<Algorithms> comboBoxAlgorithms = new ComboBox();
         setComboboxAlgorithms(comboBoxAlgorithms);
@@ -120,6 +161,7 @@ public class PrimaryWindow {
         ComboBox<Dimension> comboBoxDimensions = new ComboBox();
         setComboBox(comboBoxAlgorithms, comboBoxDimensions);
 
+        
         HBox hBox = new HBox();
         HBox mainHBox = new HBox();
         hBox.setSpacing(40);
@@ -135,6 +177,8 @@ public class PrimaryWindow {
         mainBorderPane.setTop(topBorderPane);
         mainBorderPane.setCenter(mainHBox);
         mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            
+            
             if (e.getCode() == KeyCode.ESCAPE) {
                 System.exit(1);
             }
@@ -347,6 +391,9 @@ public class PrimaryWindow {
             );
         }
 
+        
+        //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test"+".csv", testResult);
+        //CSVWriter.getCsvWriter().createAndWrite("src/Results/", "testResults.csv",testResult);
         CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test_P"+ testParameter + "_S" +  startParam + "_E" + endParam +".csv", testResult);
     }
 
