@@ -45,14 +45,18 @@ public class SimulatedAnnealing {
             }
 
             tCur *= coolingRate;
+            if(tCur <= tMin){
+                tCur+=tMax*((100000f-i)/100000f);
+                //System.out.println("Adding " + tMax*((100000f-i)/100000f) + " to tcur i: " + i);
+            }
             if(i>100000){
-                System.out.println("Breaking out of SA after 100k iterations");
+                //System.out.println("Breaking out of SA after 100k iterations");
                 break;
             }
 
         }
-        //TODO make sure we have bestsoln here.
-        System.out.println("best soln found " + bestSoln);
+        //TODO make sure we have bestsoln here. STOP SPAMMING MY CONSOLE @Mads
+        //System.out.println("best soln found " + bestSoln);
         finalSolution = bestSolution;
 
 
