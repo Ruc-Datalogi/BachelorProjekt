@@ -47,7 +47,9 @@ public class Painter {
             iterator+=55;
             gc.fillRect(box.getCornerA().x + 1,box.getCornerA().y+1,box.w-2,box.h-2);
             gc.setFill(Color.BLACK);
-            gc.fillText("[ id: "  + box.id + "]" +"\n" + "[" + box.w + "," + box.h + "]"  ,box.getCornerA().x + box.w/3, box.getCornerA().y + box.h/3);
+            String s = "[ id: "  + box.id + "]" +"\n" + "[" + box.w + "," + box.h + "]";
+            String s_id = "[ id: "  + box.id + "]";
+            gc.fillText(s_id ,box.getCornerA().x + box.w/3, box.getCornerA().y + box.h/3);
         }
     }
 

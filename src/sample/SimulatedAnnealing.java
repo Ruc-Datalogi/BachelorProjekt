@@ -8,7 +8,7 @@ public class SimulatedAnnealing {
     ArrayList<String> energyList = new ArrayList<>();
     ArrayList<Integer> iterList = new ArrayList<>();
     public int i = 0;
-
+    int iterations = 100000;
     float delta;
 
     void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float coolingRate) throws IOException {
@@ -45,7 +45,7 @@ public class SimulatedAnnealing {
             }
 
             tCur *= coolingRate;
-            if(i>100000){
+            if(i > iterations){
                 //System.out.println("Breaking out of SA after 100k iterations");
                 break;
             }

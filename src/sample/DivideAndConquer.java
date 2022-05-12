@@ -17,6 +17,9 @@ public class DivideAndConquer {
     int depth = 0;
     int bucketSize;
     int bestArea = Integer.MAX_VALUE;
+    int SAiterations = 40000;
+    float SAcoolingRate = 0.8f;
+
 
     public DivideAndConquer (ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positive = positive;
@@ -29,13 +32,49 @@ public class DivideAndConquer {
         this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(modules.size()));
     }
 
+    public ArrayList<Bucket> generateBucketsBasedOnSize(ArrayList<Module> moduleArrayList) {
+        ArrayList<Bucket> outPutBuckets = new ArrayList<>();
+        this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(moduleArrayList.size()));
+        int index = 1;
+        Bucket currBucket = new Bucket(); // Fill up the buckets with the size of amount modules sqrt
+
+        Comparator<Module> comparator = new Comparator<Module>() {
+            @Override
+            public int compare(Module o1, Module o2) {
+                return Integer.compare(o1.width*o1.height , o2.width*o2.height);
+            }
+        };
+        System.out.println(moduleArrayList);
+
+
+        if(bucketSize != 1) {
+            for(Module mod : moduleArrayList) {
+                mod.id = index;
+                currBucket.modules.add(mod);
+                index++;
+                if (currBucket.modules.size() == bucketSize) {
+                    outPutBuckets.add(currBucket);
+                    currBucket = new Bucket();
+                    index = 1;
+                }
+            }
+            if(currBucket.modules.size() != 0 ) outPutBuckets.add(currBucket);
+        } else {
+            currBucket.modules.addAll(moduleArrayList);
+            outPutBuckets.add(currBucket);
+        }
+
+        return outPutBuckets;
+    }
+
     public ArrayList<Bucket> generateBuckets(ArrayList<Module> moduleArrayList){
         ArrayList<Module> rectangles = new ArrayList<>();
         ArrayList<Module> squares = new ArrayList<>();
         ArrayList<Bucket> outPutBuckets = new ArrayList<>();
         this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(moduleArrayList.size()));
+        System.out.println("Bucket " + this.bucketSize);
         int index = 1;
-        if(bucketSize != 1 ) { // TODO maybe not the right if cond if the bucket size is changing
+        if(bucketSize != 1 ) {
             for (Module mod : moduleArrayList) { // Check if module is a rectangle or a square
                 if ((float) mod.height / (float) mod.width >= 2 || (float) mod.height / (float) mod.width <= 0.5) {
                     rectangles.add(mod);
@@ -78,10 +117,9 @@ public class DivideAndConquer {
     }
 
     public SubProblem calculateSubProblem(SubProblem p) throws IOException {
-        //System.out.println("subproblem p " + p.positive + "  " +  p.negative + p.bucket.modules );
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(p, 10000,0,0.9f);
-        //System.out.println("i calculated for subproblem p " + p.positive + "  " +  p.negative + p.bucket.modules );
+        sa.iterations = SAiterations;
+        sa.simulatedAnnealing(p, 10000,0,SAcoolingRate);
         return p;
     }
 
@@ -99,12 +137,12 @@ public class DivideAndConquer {
     }
 
     public SequencePairs calculatePlacement() throws IOException {
-        Module superModule;
+        Module superModule = new Module(-1,-1,-1);
         ArrayList<Bucket> buckets = new ArrayList<>();
         buckets.addAll(generateBuckets(modules));
         int size = Integer.MAX_VALUE;
 
-        while(true) {
+        while(size != 1) {
             ArrayList<SubProblem> subProblems = new ArrayList<>();
             ArrayList<Module> superModules = new ArrayList<>();
             for (Bucket b : buckets) {
@@ -113,16 +151,13 @@ public class DivideAndConquer {
             for (SubProblem subProblem : subProblems) {
                 calculateSubProblem(subProblem);
             }
-            if (size != 1) superModules.addAll(calculateSuperModules(subProblems)); // TODO update bucket size :D
+            superModules.addAll(calculateSuperModules(subProblems));
             buckets.clear();
             buckets.addAll(generateBuckets(superModules));
-            if (size == 1) {
-                superModule = calculateSuperModules(subProblems).get(0);
-                System.out.println(" super " + superModule);
-                System.out.println(superModule.width * superModule.height);
-                break;
-            }
             size = superModules.size();
+            if (size == 1) {
+                superModule = superModules.get(0);
+            }
         }
         bestArea = superModule.width * superModule.height;
         ArrayList<Integer> finalPositive = new ArrayList<>();
@@ -166,12 +201,6 @@ public class DivideAndConquer {
         return null;
     }
 
-
-    private SequencePairs thirdTime(Module m) {
-        SequencePairs sequencePairs = new SequencePairs(m.subModules.get(0).subProblem.bestPositive, m.subModules.get(0).subProblem.bestNegative , m.subModules.get(0).subProblem.bucket.modules);
-        sequencePairs.calculatePlacementTable();
-        return sequencePairs;
-    }
 
     private boolean isPerfect(int N) {
         if ((Math.sqrt(N) - Math.floor(Math.sqrt(N))) != 0)
@@ -218,6 +247,7 @@ public class DivideAndConquer {
 class Bucket {
     public ArrayList<Module> modules = new ArrayList<>();
     boolean rectangular;
+    int totalArea = 0;
 
     @Override
     public String toString() {
