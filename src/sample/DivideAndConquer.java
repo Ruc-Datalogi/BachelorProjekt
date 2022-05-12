@@ -25,7 +25,6 @@ public class DivideAndConquer {
         this.positive = positive;
         this.negative = negative;
         this.modules = modules;
-        System.out.println(modules.size());
         for(Module mod : modules) {
             mod.realdId = mod.id;
         }
@@ -44,8 +43,6 @@ public class DivideAndConquer {
                 return Integer.compare(o1.width*o1.height , o2.width*o2.height);
             }
         };
-        System.out.println(moduleArrayList);
-
 
         if(bucketSize != 1) {
             for(Module mod : moduleArrayList) {
@@ -72,7 +69,6 @@ public class DivideAndConquer {
         ArrayList<Module> squares = new ArrayList<>();
         ArrayList<Bucket> outPutBuckets = new ArrayList<>();
         this.bucketSize = (int) Math.sqrt(getClosestPerfectSquare(moduleArrayList.size()));
-        System.out.println("Bucket " + this.bucketSize);
         int index = 1;
         if(bucketSize != 1 ) {
             for (Module mod : moduleArrayList) { // Check if module is a rectangle or a square
