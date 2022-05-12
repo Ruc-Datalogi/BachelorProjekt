@@ -8,7 +8,7 @@ public class SimulatedAnnealing {
     ArrayList<String> energyList = new ArrayList<>();
     ArrayList<Integer> iterList = new ArrayList<>();
     public int i = 0;
-
+    int iterations = 100000;
     float delta;
 
     void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float coolingRate) throws IOException {
@@ -45,17 +45,18 @@ public class SimulatedAnnealing {
             }
 
             tCur *= coolingRate;
+
             if(tCur <= tMin){
-                tCur+=tMax*((100000f-i)/100000f);
+                tCur+=tMax*((iterations-i)/iterations);
                 //System.out.println("Adding " + tMax*((100000f-i)/100000f) + " to tcur i: " + i);
             }
-            if(i>100000){
+            if(i>iterations){
                 //System.out.println("Breaking out of SA after 100k iterations");
                 break;
             }
 
         }
-        //TODO make sure we have bestsoln here. STOP SPAMMING MY CONSOLE @Mads
+        //TODO make sure we have bestsoln here.
         //System.out.println("best soln found " + bestSoln);
         finalSolution = bestSolution;
 

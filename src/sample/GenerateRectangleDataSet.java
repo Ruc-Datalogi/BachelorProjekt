@@ -8,7 +8,7 @@ import java.util.Random;
 
 
 public class GenerateRectangleDataSet {
-    int minAnyDimension=15;
+    int minAnyDimension=25;
     int index;
 
     ArrayList<Simple2DBox> BoxArray = new ArrayList<Simple2DBox>();
@@ -26,13 +26,10 @@ public class GenerateRectangleDataSet {
         if(totalArea!=maxW*maxH){
             System.out.println("ERROR!: We generated boxes with " + totalArea +". But expected " + maxW*maxH);
         }
-
-        System.out.println(BoxArray.size());
     }
     public void GenerateTestExplicitBoxes(int maxW,int maxH){
         Explicit2DBox startBox=new Explicit2DBox(maxW,maxH,0,0);
         SliceExplicitBox(startBox);
-        System.out.println(BoxTest);
     }
 
     public SequencePairs generateSeq() {

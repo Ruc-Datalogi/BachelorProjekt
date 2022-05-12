@@ -11,10 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -133,6 +130,7 @@ public class PrimaryWindow {
                         new Module(14,2,2)
                 )));
          */
+        /*
         int MAX = Integer.MAX_VALUE;
         SequencePairs sequencePairsBest = new SequencePairs(new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Integer>(Arrays.asList(5)), new ArrayList<Module>(Arrays.asList(new Module(1,1,1))));
         for (int i = 0 ; i < 10 ; i++) {
@@ -145,8 +143,9 @@ public class PrimaryWindow {
                 sequencePairsBest = sequencePairs;
             }
         }
-        painter.drawBoxesInBin(sequencePairsBest.bestBin);
 
+         */
+        divideAndConquerRunTestSet();
         /*
         SequencePairs testSeq = new SequencePairs(CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
@@ -177,8 +176,7 @@ public class PrimaryWindow {
         mainBorderPane.setTop(topBorderPane);
         mainBorderPane.setCenter(mainHBox);
         mainBorderPane.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
-            
-            
+
             if (e.getCode() == KeyCode.ESCAPE) {
                 System.exit(1);
             }
@@ -186,6 +184,7 @@ public class PrimaryWindow {
         });
         return mainBorderPane;
     }
+
     private static void RunMultiTestVariables(int p1, float p1_Start, float p1_End, int p1_Steps, int p2, float p2_Start,float p2_End, int p2_Steps) throws IOException {
         File testSetFolder = new File("src/TestSet/");
         System.out.println("TestVariables :)");
@@ -268,7 +267,6 @@ public class PrimaryWindow {
                     if (bestDist > testSeq.bestDist) {
                         bestDist = testSeq.bestDist;
                         ourBestBin= testSeq.bestBin;
-
                     }
                     //iterationsSA = sa.i;
                 }
@@ -291,8 +289,43 @@ public class PrimaryWindow {
         }
 
         CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test_P1"+ p1 + "_P2" + p2 + "_P1V" +  p1_Start + "-" + p1_End + "_P2V" + p2_Start + "-" + p2_End  +"I" + p2_Steps*p1_Steps + "Dual.csv", testResult);
-
     }
+    private static void divideAndConquerRunTestSet() throws IOException {
+        File testSetFolder = new File("src/TestSet/");
+        int sum = 0;
+        for (File testSet : Objects.requireNonNull(testSetFolder.listFiles())) {
+
+            ArrayList<Simple2DBox> BoxArray = new ArrayList<>();
+
+            FileReader fileReader = new FileReader(testSet);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while (bufferedReader.ready()) {
+                String s = bufferedReader.readLine();
+                String[] split = s.split(",");
+
+                BoxArray.add(new Simple2DBox(Integer.parseInt(split[0]), Integer.parseInt(split[1])));
+            }
+            ArrayList<Integer> positive = new ArrayList<>();
+            ArrayList<Integer> negative = new ArrayList<>();
+            ArrayList<Module> modules = new ArrayList<>();
+
+            for (int i = 0; i < BoxArray.size(); i++) {
+                positive.add(i + 1);
+                negative.add(i + 1);
+                modules.add(new Module(i + 1, BoxArray.get(i).w, BoxArray.get(i).h));
+            }
+
+            DivideAndConquer divideAndConquer = new DivideAndConquer(positive, negative, modules);
+            divideAndConquer.calculatePlacement();
+            System.out.println(divideAndConquer.bestArea);
+            sum += divideAndConquer.bestArea;
+        }
+        System.out.println(testSetFolder.listFiles().length);
+        System.out.println(sum/testSetFolder.listFiles().length);
+    }
+
+
     private static void RunTestForVariables(int testParameter, float startParam, float endParam, int stepCount) throws IOException {
         File testSetFolder = new File("src/TestSet/");
         int bestDist = Integer.MAX_VALUE;
