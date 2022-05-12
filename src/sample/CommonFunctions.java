@@ -1,8 +1,6 @@
 package sample;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CommonFunctions {
 
@@ -26,6 +24,17 @@ public class CommonFunctions {
     public static List<Integer> getCommon(List<Integer> rightPosSlice, List<Integer> rightNegiSlice) {
         List<Integer> rightCommon = new ArrayList<>(rightPosSlice);
         rightCommon.retainAll(rightNegiSlice);
+        return rightCommon;
+    }
+    public static List<Integer> getIntersect(List<Integer> rightPosSlice, List<Integer> rightNegiSlice,int includeValue) {
+        List<Integer> rightCommon = new ArrayList<>();
+        Iterator<Integer> rightIt = rightPosSlice.iterator();
+        while(rightIt.hasNext()){
+            int v= rightIt.next();
+            if (v==includeValue || rightNegiSlice.contains(v)){
+                rightCommon.add(v);
+            }
+        }
         return rightCommon;
     }
 
