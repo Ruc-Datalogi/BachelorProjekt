@@ -28,6 +28,38 @@ public class SequencePairs extends Algorithm {
             mapNegative.put(negative.get(i), i);
         }
     }
+
+    boolean shadesModule(NormModules i, NormModules j){
+
+        boolean conditionOne = false;
+        boolean conditionTwo = false;
+        if (j.width + j.getX() <= i.width+i.getX()) conditionOne = true;
+        if (j.height + j.getY() <= i.height+i.getY()) conditionTwo = true;
+
+        //System.out.println(i + " " + j);
+        return conditionOne && conditionTwo;
+    }
+
+    /***
+     * When we place a module we need to check with the preplaced modules if this new module shadows any of the old modules.
+     * @param shadingModule the newly placed module
+     * @param placedModules old module
+     * @param normiesOut weird mapping stuff
+     * @param moduleMapping weird mapping stuff
+     * @return a list of all the shaded modules, empty if none.
+     */
+    ArrayList<NormModules> shadesModuleArray(NormModules shadingModule, ArrayList<Integer> placedModules, ArrayList<NormModules> normiesOut, int[] moduleMapping){
+        ArrayList<NormModules> shadedModules = new ArrayList<>();
+
+        for (Integer j : placedModules) { // we search all placed modules with the newly placed module, does this module shade any of the already placed modules?
+            NormModules moduleJ = normiesOut.get(moduleMapping[j]);
+
+            if (shadesModule(shadingModule,moduleJ) && moduleJ != shadingModule) shadedModules.add(moduleJ);
+        }
+        return shadedModules;
+    }
+
+
     public void semiNormalizePlacements(){
         // we have two extreme modules: s and t
         //s represents the module placed at (0,infinite)
@@ -114,34 +146,47 @@ public class SequencePairs extends Algorithm {
             NormModules afterNormMod=normiesOut.get(moduleMapping[afterId]);
             hMod.setY(afterNormMod.getY()+afterNormMod.height);
             //System.out.println("Now mod" + h + " has dimensions:" + hMod.x + "," + hMod.y);
-            prevNormMod.PrintDimensions();
-            afterNormMod.PrintDimensions();
+            //prevNormMod.PrintDimensions();
+            //afterNormMod.PrintDimensions();
             //Add h to extremes after prevId's position
             extremes.add(extremes.indexOf(prevId)+1,h);
 
             //Remove extremes that are no longer extremes (shadowed)
             //That means they are no next to one of the two modules s or t in the extreme list
             //So in essence we remove the middle element of extremes when extremes is of size 5
-            if(extremes.size()==5){
-                extremes.remove(2);
-            }
 
+            //System.out.println(extremes);
+            ArrayList<NormModules> shadedModules = shadesModuleArray(hMod,extremes,normiesOut,moduleMapping); //define shaded modules
+
+            //search for the shaded modules in the extremes and remove them
+            for (NormModules module: shadedModules) {
+                for (int i = extremes.size()-1; i > 0; i--) { // we have to descend the array, so we have weird issues w. getting the next element in the array.
+                    int tempID = extremes.get(i);
+                    if(module.id == tempID) extremes.remove(i);
+                }
+            }
+            //System.out.println(extremes);
 
         }
+
+
+
+
         NormModules widthExtreme= normiesOut.get(moduleMapping[extremes.get(extremes.size()-2)]);
         NormModules heightExtreme= normiesOut.get(moduleMapping[extremes.get(1)]);
-        System.out.println(extremes);
+        //System.out.println("extremes " + extremes);
         int thisWidth=widthExtreme.getX()+widthExtreme.width;
-        System.out.println("wId:"+widthExtreme.id);
-        System.out.println("hId:"+ heightExtreme.id);
-        System.out.println("widthX:" + widthExtreme.getX());
-        System.out.println("heightY:"+ heightExtreme.getY());
+        //System.out.println("wId:"+widthExtreme.id);
+        //System.out.println("hId:"+ heightExtreme.id);
+        //System.out.println("widthX:" + widthExtreme.getX());
+        //System.out.println("heightY:"+ heightExtreme.getY());
         int thisHeight= heightExtreme.getY()+ heightExtreme.height;
         System.out.println("Our square is:" + thisWidth +","+thisHeight+ " awea:" + thisWidth*thisHeight);
     }
 
 
     public void calculatePlacementTable(){
+
         for(Module mod : modules){
             if(mod.id == worstIdHorizontal){
                 rotate = false;
@@ -205,6 +250,8 @@ public class SequencePairs extends Algorithm {
             iterationsSinceBest = 0;
             PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
+        semiNormalizePlacements();
+
     }
 
 
@@ -399,6 +446,7 @@ class Module implements Comparable<Module>{
 
 }
 class NormModules extends Module{
+    boolean isShadowed = false;
     int x,y;
     public NormModules(int id, int width, int height) {
         super(id, width, height);
