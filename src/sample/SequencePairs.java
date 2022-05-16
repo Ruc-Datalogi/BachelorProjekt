@@ -250,7 +250,7 @@ public class SequencePairs extends Algorithm {
             iterationsSinceBest = 0;
             PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
-        semiNormalizePlacements();
+        //semiNormalizePlacements();
 
     }
 
