@@ -221,8 +221,8 @@ public class PrimaryWindow {
         float minTemp = 0.005f;
         float coolingRate = 0.9994f;
 
-        float stepSizeP1= ((p1_End-p1_Start)/p1_Steps);
-        float stepSizeP2= ((p2_End-p2_Start)/p2_Steps);
+        float stepSizeP1= ((p1_End-p1_Start)/(p1_Steps-1));
+        float stepSizeP2= ((p2_End-p2_Start)/(p2_Steps-1));
         for (int x= 0 ; x<p2_Steps;x++) {
             if (p2 == 0) { //StartTemp param
                 startTemp = (int) (p2_Start + stepSizeP2 * x);
