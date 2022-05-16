@@ -297,7 +297,19 @@ public class PrimaryWindow {
             }
         }
 
-        CSVWriter.getCsvWriter().createAndWrite("src/Results/", "test_P1"+ p1 + "_P2" + p2 + "_P1V" +  p1_Start + "-" + p1_End + "_P2V" + p2_Start + "-" + p2_End  +"I" + p2_Steps*p1_Steps + "Dual.csv", testResult);
+        CSVWriter.getCsvWriter().createAndWrite("src/Results/", getVariableName(p1)+  p1_Start + "-" + p1_End + "i " + p1_Steps + " " + getVariableName(p2)  +  p2_Start + "-" + p2_End + "_P2V"  +"i " + p2_Steps + ".csv", testResult);
+    }
+    private static String getVariableName(int parameter){
+        switch(parameter){
+            case 0:
+                return "startTemp";
+            case 1:
+                return "minTemp";
+            case 2:
+                return "coolRate";
+            default:
+                return "unknown";
+        }
     }
     private static void divideAndConquerRunTestSet() throws IOException {
         File testSetFolder = new File("src/TestSet/");
