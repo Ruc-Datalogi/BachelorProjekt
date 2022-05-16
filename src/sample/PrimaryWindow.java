@@ -57,7 +57,7 @@ public class PrimaryWindow {
         doSATests.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         doSATests.setOnAction(a-> {
                 try {
-                    RunMultiTestVariables(0,500000,50000,10,2,0.999f,0.9f,100);
+                    RunMultiTestVariables(0,1000000,100000,10,2,0.999f,0.9f,20);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -220,9 +220,12 @@ public class PrimaryWindow {
         int startTemp = 2000000;
         float minTemp = 0.005f;
         float coolingRate = 0.9994f;
+        int iterations=100000;
 
         float stepSizeP1= ((p1_End-p1_Start)/(p1_Steps-1));
+        System.out.println("stepsize for " + getVariableName(p1) + stepSizeP1);
         float stepSizeP2= ((p2_End-p2_Start)/(p2_Steps-1));
+        System.out.println("stepsize for " + getVariableName(p2) + stepSizeP2);
         for (int x= 0 ; x<p2_Steps;x++) {
             if (p2 == 0) { //StartTemp param
                 startTemp = (int) (p2_Start + stepSizeP2 * x);
@@ -230,6 +233,8 @@ public class PrimaryWindow {
                 minTemp = (p2_Start + stepSizeP2 * x);
             } else if (p2 == 2) {//Cooling rate param
                 coolingRate = (p2_Start + stepSizeP2 * x);
+            } else if (p2 == 3){//Iterations
+                iterations = (int) (p2_Start + stepSizeP2 * x);
             }
             for (int j = 0; j < p1_Steps; j++) {
                 System.out.println("x,j:" + x+"," +j);
@@ -240,6 +245,8 @@ public class PrimaryWindow {
                     minTemp = (p1_Start + stepSizeP1 * j);
                 } else if (p1 == 2) {//Cooling rate param
                     coolingRate = (p1_Start + stepSizeP1 * j);
+                }else if (p2 == 3){ //Iterations
+                    iterations = (int) (p1_Start + stepSizeP1 * j);
                 }
                 everySolution=new ArrayList<>();
                 for (File testSet : Objects.requireNonNull(testSetFolder.listFiles())) {
@@ -268,6 +275,7 @@ public class PrimaryWindow {
 
                     SequencePairs testSeq = new SequencePairs(positive, negative, modules);
                     SimulatedAnnealing sa = new SimulatedAnnealing();
+                    sa.iterations=iterations;
 
                     testSeq.calculatePlacementTable();
                     sa.simulatedAnnealing(testSeq, startTemp, minTemp, coolingRate);
@@ -297,7 +305,7 @@ public class PrimaryWindow {
             }
         }
 
-        CSVWriter.getCsvWriter().createAndWrite("src/Results/", getVariableName(p1)+  p1_Start + "-" + p1_End + "i " + p1_Steps + " " + getVariableName(p2)  +  p2_Start + "-" + p2_End + "_P2V"  +"i " + p2_Steps + ".csv", testResult);
+        CSVWriter.getCsvWriter().createAndWrite("src/Results/", getVariableName(p1)+  p1_Start + "-" + p1_End + "i " + p1_Steps + " " + getVariableName(p2)  +  p2_Start + "-" + p2_End  +"i " + p2_Steps + ".csv", testResult);
     }
     private static String getVariableName(int parameter){
         switch(parameter){
@@ -307,6 +315,8 @@ public class PrimaryWindow {
                 return "minTemp";
             case 2:
                 return "coolRate";
+            case 3:
+                return "SA-Iterations";
             default:
                 return "unknown";
         }
