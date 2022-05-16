@@ -215,7 +215,7 @@ public class PrimaryWindow {
         }
         averageAmountRectangles = sum/rectangles.size();
         STDRectangles = CommonFunctions.calculateSD(rectangles);
-        String testResult = "optimal is 40000, dataset run on the same 50 generated dataset with avg of " + averageAmountRectangles +" recntangles with std: " + STDRectangles + "\naverage,std,cool,startTemp,minTemp\n";
+        String testResult = "optimal is 40000, dataset run on the same 50 generated dataset with avg of " + averageAmountRectangles +" rectangles with std: " + STDRectangles + "\naverage,std,cool,startTemp,minTemp,SAIterations\n";
         //Default values
         int startTemp = 2000000;
         float minTemp = 0.005f;
@@ -297,11 +297,11 @@ public class PrimaryWindow {
                 double standardDeviation = CommonFunctions.calculateSD(everySolution);
                 //average, std, best, cool, start, min temp
                 testResult +=average + "," + standardDeviation + "," +
-                        coolingRate + "," + startTemp + "," + minTemp +"\n";
+                        coolingRate + "," + startTemp + "," + minTemp + "," + iterations +"\n";
                 painter.fillBlank();
                 painter.drawBoxesInBin(ourBestBin);
                 System.out.println("average " + average +  " coolingrate " + coolingRate +
-                        " startT: " + startTemp + " minT: " + minTemp);
+                        " startT: " + startTemp + " minT: " + minTemp + "SAIterations:" + iterations);
             }
         }
 
