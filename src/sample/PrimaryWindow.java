@@ -115,8 +115,8 @@ public class PrimaryWindow {
 
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
-        sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
-        painter.drawBoxesInBin(testSeq.testBin);
+        sa.simulatedAnnealing(testSeq, 20000000,0f,0.99f);
+        //painter.drawBoxesInBin(testSeq.testBin);
 
 
         /*
