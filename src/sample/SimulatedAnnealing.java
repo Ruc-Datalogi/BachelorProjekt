@@ -8,7 +8,7 @@ public class SimulatedAnnealing {
     ArrayList<String> energyList = new ArrayList<>();
     ArrayList<Integer> iterList = new ArrayList<>();
     public int i = 0;
-    int iterations = 100000;
+    int iterations = 1000;
     float delta;
 
     void simulatedAnnealing(Algorithm a1, float tMax, float tMin, float coolingRate) throws IOException {

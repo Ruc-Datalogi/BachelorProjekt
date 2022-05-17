@@ -57,7 +57,7 @@ public class PrimaryWindow {
         doSATests.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
         doSATests.setOnAction(a-> {
                 try {
-                    RunMultiTestVariables(0,500000,50000,10,2,0.999f,0.9f,100);
+                    RunMultiTestVariables(0,500000,500000,50000,2,0.999f,0.999f,100);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -112,13 +112,13 @@ public class PrimaryWindow {
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules);
         */
-        /*
+
         testSeq.calculatePlacementTable();
         SimulatedAnnealing sa = new SimulatedAnnealing();
         sa.simulatedAnnealing(testSeq, 20000000,1f,0.99f);
         painter.drawBoxesInBin(testSeq.testBin);
 
-         */
+
         /*
         DivideAndConquer divideAndConquer = new DivideAndConquer(new ArrayList<Integer>(Arrays.asList(5,4,1,3,2,6,7,8)),
                 new ArrayList<Integer>(Arrays.asList(3,6,5,7,8,1,2,5,4)),
@@ -160,6 +160,14 @@ public class PrimaryWindow {
                 CommonFunctions.randomIntegerList(State.getState().modules.size()),
                 State.getState().modules);
         */
+        ArrayList<NormModules> normModules = testSeq.semiNormalizePlacements();
+
+        normModules.remove(normModules.size()-1);
+        normModules.remove(normModules.size()-1);
+        for (NormModules module : normModules) {
+            System.out.println("Painting at " + "(" + module.x + "," + module.y + ") " + module.width + " " + module.height);
+        }
+        painter.drawBox2D(normModules);
 
         //painter.drawBoxesInBin(testSeq.testBin);
 
@@ -223,7 +231,7 @@ public class PrimaryWindow {
 
         float stepSizeP1= ((p1_End-p1_Start)/p1_Steps);
         float stepSizeP2= ((p2_End-p2_Start)/p2_Steps);
-        for (int x= 0 ; x<p2_Steps;x++) {
+        for (int x= 0 ; x<1;x++) {
             if (p2 == 0) { //StartTemp param
                 startTemp = (int) (p2_Start + stepSizeP2 * x);
             } else if (p2 == 1) {//MinTemp param
@@ -231,7 +239,7 @@ public class PrimaryWindow {
             } else if (p2 == 2) {//Cooling rate param
                 coolingRate = (p2_Start + stepSizeP2 * x);
             }
-            for (int j = 0; j < p1_Steps; j++) {
+            for (int j = 0; j < 1; j++) {
                 System.out.println("x,j:" + x+"," +j);
 
                 if (p1 == 0) { //StartTemp param
@@ -272,6 +280,8 @@ public class PrimaryWindow {
                     testSeq.calculatePlacementTable();
                     sa.simulatedAnnealing(testSeq, startTemp, minTemp, coolingRate);
                     everySolution.add(testSeq.bestDist);
+
+
 
                     if (bestDist > testSeq.bestDist) {
                         bestDist = testSeq.bestDist;

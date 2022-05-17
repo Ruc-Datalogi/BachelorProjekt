@@ -31,12 +31,14 @@ public class SequencePairs extends Algorithm {
 
     boolean shadesModule(NormModules i, NormModules j){
 
+        System.out.println("Shades? " + i + " " + j);
         boolean conditionOne = false;
         boolean conditionTwo = false;
         if (j.width + j.getX() <= i.width+i.getX()) conditionOne = true;
         if (j.height + j.getY() <= i.height+i.getY()) conditionTwo = true;
 
         //System.out.println(i + " " + j);
+        System.out.println("Was " + conditionOne + " and " + conditionTwo);
         return conditionOne && conditionTwo;
     }
 
@@ -60,14 +62,14 @@ public class SequencePairs extends Algorithm {
     }
 
 
-    public void semiNormalizePlacements(){
+    public ArrayList<NormModules> semiNormalizePlacements(){
         // we have two extreme modules: s and t
         //s represents the module placed at (0,infinite)
         //t represents the module placed at (infinite,0)
         NormModules source = new NormModules(modules.size()+1, 0,Integer.MAX_VALUE);
         NormModules target = new NormModules(modules.size()+2,Integer.MAX_VALUE,0);
-        System.out.println("SourceID: " + source.id);
-        System.out.println("TargetID: " +target.id);
+        //System.out.println("SourceID: " + source.id);
+        //System.out.println("TargetID: " +target.id);
         ArrayList<NormModules> normiesOut = new ArrayList<>();
         int[] moduleMapping = new int[modules.size()+4];
 
@@ -99,36 +101,32 @@ public class SequencePairs extends Algorithm {
         normA.add(target.id);
 
         //We then have a list of extreme modules, which initially only contains s and t
-        LinkedList<Integer> extremed = new LinkedList<>();
-        extremed.add(source.id);
-        extremed.add(target.id);
-
-        ArrayList<Integer> extremes = new ArrayList<>();
+        LinkedList<Integer> extremes = new LinkedList<>();
         extremes.add(source.id);
         extremes.add(target.id);
 
         //We go through each of the elements in the negative list
-        for(Integer h : normB){
+        for(Integer h : normB) {
             //We consider this of this element to be H and we need to find the element that is positioned before H in normA
 
             //Tempoarily add h to extremes :)
             //Find the elements we have in common between the extreme list and the normA
-            List<Integer> intersects= CommonFunctions.getIntersect(normA,extremes,h);
+            List<Integer> intersects = CommonFunctions.getIntersect(normA, extremes, h);
             int h_A = intersects.indexOf(h);
             //List<Integer> extremeCommon=CommonFunctions.getCommon()
             //List<Integer> prev =intersects.subList(0,h_A);
             //List<Integer> after=intersects.subList(h_A,intersects.size());
-            int prevId,afterId;
-            if(h_A==-1){
+            int prevId, afterId;
+            if (h_A == -1) {
                 /*System.out.println("h id is: " + h);
                 System.out.println("Extremes: " + extremes);
                 System.out.println("normA: " + normA);
                 System.out.println("Intersex: " + intersects);
 
                  */
-                prevId=intersects.get(0);
-                afterId=intersects.get(intersects.size()-1);
-            }else {
+                prevId = intersects.get(0);
+                afterId = intersects.get(intersects.size() - 1);
+            } else {
                 //System.out.println(intersects);
                 //System.out.println("h's position in intersects is: " + h_A+ " h is:" +h);
                 prevId = intersects.get(h_A - 1);
@@ -140,37 +138,56 @@ public class SequencePairs extends Algorithm {
 
             NormModules hMod = normiesOut.get(moduleMapping[h]);
             //We get the previous module for setting the x value
-            NormModules prevNormMod=normiesOut.get(moduleMapping[prevId]);
-            hMod.setX(prevNormMod.getX()+prevNormMod.width);
+            NormModules prevNormMod = normiesOut.get(moduleMapping[prevId]);
+            hMod.setX(prevNormMod.getX() + prevNormMod.width);
             //We get the after module to set the y value
-            NormModules afterNormMod=normiesOut.get(moduleMapping[afterId]);
-            hMod.setY(afterNormMod.getY()+afterNormMod.height);
+            NormModules afterNormMod = normiesOut.get(moduleMapping[afterId]);
+            hMod.setY(afterNormMod.getY() + afterNormMod.height);
             //System.out.println("Now mod" + h + " has dimensions:" + hMod.x + "," + hMod.y);
             //prevNormMod.PrintDimensions();
             //afterNormMod.PrintDimensions();
             //Add h to extremes after prevId's position
-            extremes.add(extremes.indexOf(prevId)+1,h);
+            int ass = extremes.indexOf(prevId) + 1; //save index so we can use
+            extremes.add(ass, h);
+
+            System.out.println(ass + " " + extremes);
 
             //Remove extremes that are no longer extremes (shadowed)
             //That means they are no next to one of the two modules s or t in the extreme list
             //So in essence we remove the middle element of extremes when extremes is of size 5
 
             //System.out.println(extremes);
-            ArrayList<NormModules> shadedModules = shadesModuleArray(hMod,extremes,normiesOut,moduleMapping); //define shaded modules
+            //ArrayList<NormModules> shadedModules = shadesModuleArray(hMod,extremes,normiesOut,moduleMapping); //define shaded modules
 
             //search for the shaded modules in the extremes and remove them
-            for (NormModules module: shadedModules) {
-                for (int i = extremes.size()-1; i > 0; i--) { // we have to descend the array, so we have weird issues w. getting the next element in the array.
-                    int tempID = extremes.get(i);
-                    if(module.id == tempID) extremes.remove(i);
+            ArrayList<Integer> shadedExtremePositions = new ArrayList<>();
+
+            ListIterator<Integer> i = extremes.listIterator(ass);
+            i.next();
+            while (i.hasNext()){
+                int moduleID = i.next();
+                if (shadesModule(hMod,normiesOut.get(moduleMapping[moduleID]))){
+                    //System.out.println("removing mod " + moduleID + " " + list);
+                    i.remove();
+                    //System.out.println("removed " + list);
+                } else {
+                    break;
                 }
             }
-            //System.out.println(extremes);
 
+            i = extremes.listIterator(ass);
+            System.out.println("doing previous");
+            while (i.hasPrevious()){
+                int moduleID = i.previous();
+                if (shadesModule(hMod,normiesOut.get(moduleMapping[moduleID]))){
+                    System.out.println("removing mod " + moduleID + " " + extremes);
+                    i.remove();
+                    System.out.println("removed " + extremes);
+                } else {
+                    break;
+                }
+            }
         }
-
-
-
 
         NormModules widthExtreme= normiesOut.get(moduleMapping[extremes.get(extremes.size()-2)]);
         NormModules heightExtreme= normiesOut.get(moduleMapping[extremes.get(1)]);
@@ -182,7 +199,10 @@ public class SequencePairs extends Algorithm {
         //System.out.println("heightY:"+ heightExtreme.getY());
         int thisHeight= heightExtreme.getY()+ heightExtreme.height;
         System.out.println("Our square is:" + thisWidth +","+thisHeight+ " awea:" + thisWidth*thisHeight);
+
+        return normiesOut;
     }
+
 
 
     public void calculatePlacementTable(){
@@ -250,8 +270,6 @@ public class SequencePairs extends Algorithm {
             iterationsSinceBest = 0;
             PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
-        semiNormalizePlacements();
-
     }
 
 
