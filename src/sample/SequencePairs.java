@@ -16,11 +16,6 @@ public class SequencePairs extends Algorithm {
     public Bin2D bestBin = new Bin2D();
     Bin2D testBin;
 
-    class solution {
-        ArrayList<ArrayList<Integer>> s = new ArrayList<>();
-        float optimisationFactor = 0;
-    }
-
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positiveSequence = positive;
         this.negative = negative;
@@ -35,14 +30,12 @@ public class SequencePairs extends Algorithm {
 
     boolean shadesModule(NormModules i, NormModules j){
 
-        //System.out.println("Shades? " + i + " " + j);
         boolean conditionOne = false;
         boolean conditionTwo = false;
         if (j.width + j.getX() <= i.width+i.getX()) conditionOne = true;
         if (j.height + j.getY() <= i.height+i.getY()) conditionTwo = true;
 
         //System.out.println(i + " " + j);
-        //System.out.println("Was " + conditionOne + " and " + conditionTwo);
         return conditionOne && conditionTwo;
     }
 
@@ -261,21 +254,20 @@ public class SequencePairs extends Algorithm {
         tvcg.vertices.add(sourceV);
         tvcg.vertices.add(targetV);
 
-        //int dist1=sourceH.DFS_New();
-        //int dist2 = sourceV.DFS_New();
-        //super.optimizationFactor = dist2*dist1; // the variable we optimise for.
-        super.optimizationFactor = area;
+        int dist1=sourceH.DFS_New();
+        int dist2 = sourceV.DFS_New();
+        super.optimizationFactor = dist2*dist1; // the variable we optimise for.
 
         iterationsSinceBest++;
 
         if (optimizationFactor < bestDist) {
-            //testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist1, dist2);
+            testBin = TEMPgenerateCoordinatesForModules(thcg, tvcg, dist1, dist2);
             //bestBin = testBin;
             bestDist = (int) optimizationFactor;
             //Please do not spam my console @Mads
             //System.out.println("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2);
             iterationsSinceBest = 0;
-          //  PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
+            PrimaryWindow.changeDebugMessage("Best (" + dist1 + "," + dist2 +" iterations: " + iterationsSinceBest + ") = " + dist1 *dist2 +"\n" + "Hori " + thcg.toString() + "\n" + "Verti" + tvcg.toString());
         }
     }
 
