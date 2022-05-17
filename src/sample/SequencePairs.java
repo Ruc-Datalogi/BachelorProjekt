@@ -15,7 +15,11 @@ public class SequencePairs extends Algorithm {
     float bestOptimazitionFactor = Integer.MAX_VALUE;
     public Bin2D bestBin = new Bin2D();
     Bin2D testBin;
-    HashSet<ArrayList<ArrayList<Integer>>> solutionSet = new HashSet<>();
+
+    class solution {
+        ArrayList<ArrayList<Integer>> s = new ArrayList<>();
+        float optimisationFactor = 0;
+    }
 
     public SequencePairs(ArrayList<Integer> positive, ArrayList<Integer> negative, ArrayList<Module> modules) {
         this.positiveSequence = positive;
@@ -401,10 +405,7 @@ public class SequencePairs extends Algorithm {
         solutions.add(negative);
         this.solution = solutions;
 
-        if (solutionSet.add(solutions)) {
-            semiNormalizePlacements();
-           // this.calculatePlacementTable(); // clean the table //TODO figure out if it needs to be earlier
-        }
+        this.calculatePlacementTable(); // clean the table //TODO figure out if it needs to be earlier
     }
 }
 
